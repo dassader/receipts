@@ -114,8 +114,6 @@ export function ReceiptBuilderView() {
     >
       <main className="workspace">
         <form autoComplete="on" className="tool-panel builder-panel">
-          {paletteOpen ? <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} /> : null}
-
           {receipt.blocks.length > 0 ? (
             receipt.blocks.map((block) => (
               <ReceiptBlockEditor
@@ -133,6 +131,12 @@ export function ReceiptBuilderView() {
           )}
         </form>
       </main>
+
+      {paletteOpen ? (
+        <aside aria-label="Field choices" className="field-picker-tray">
+          <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} />
+        </aside>
+      ) : null}
 
       {previewSetupOpen ? (
         <PaperPickerDialog
