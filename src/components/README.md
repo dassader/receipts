@@ -5,4 +5,4 @@
 - `ui/Section.tsx`: repeated form section shell with title icon.
 - `ui/SegmentedControl.tsx`: compact radio groups for mobile-first mode switching.
 - `forms/*`: receipt form sections.
-- `receipt/*`: printable receipt document and live preview frame.
+- `receipt/*`: printable receipt sheet and live preview frame.

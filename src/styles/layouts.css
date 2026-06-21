@@ -134,9 +134,9 @@
   bottom: 18px;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  grid-template-columns: minmax(180px, 1fr);
   gap: 10px;
-  width: min(620px, calc(100vw - 28px));
+  width: min(380px, calc(100vw - 28px));
   transform: translateX(-50%);
   padding: 10px;
   border: 1px solid rgba(222, 215, 204, 0.95);
@@ -213,7 +213,6 @@
 
   .action-bar {
     bottom: 10px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: calc(100vw - 20px);
   }
 

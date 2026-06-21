@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { FileDown, Printer } from "lucide-preact";
+import { useEffect, useMemo, useState } from "preact/hooks";
+import { Printer } from "lucide-preact";
 import type { BeforeInstallPromptEvent, LineItem, ReceiptState } from "../types";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
-import { fileBaseName } from "../lib/pwa";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
-import { exportReceiptPdf } from "../lib/exporters";
 import { AppShell } from "../layouts/AppShell";
 import { Button } from "../components/ui/Button";
 import { BusinessSection } from "../components/forms/BusinessSection";
@@ -20,7 +18,6 @@ export function ReceiptBuilderView() {
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [status, setStatus] = useState("Saved");
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const receiptRef = useRef<HTMLDivElement>(null);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
 
   useEffect(() => {
@@ -38,6 +35,13 @@ export function ReceiptBuilderView() {
     window.addEventListener("beforeinstallprompt", handleInstallPrompt);
     return () => window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
   }, []);
+
+  useEffect(() => {
+    const handleBeforePrint = () => updatePrintPageSize(receipt.paper);
+
+    window.addEventListener("beforeprint", handleBeforePrint);
+    return () => window.removeEventListener("beforeprint", handleBeforePrint);
+  }, [receipt.paper]);
 
   const updateField = <K extends keyof ReceiptState>(field: K, value: ReceiptState[K]) => {
     setReceipt((current) => ({ ...current, [field]: value }));
@@ -92,26 +96,17 @@ export function ReceiptBuilderView() {
     setInstallPrompt(null);
   };
 
-  const exportPdf = async () => {
-    if (!receiptRef.current) {
-      return;
-    }
-
-    setStatus("Rendering PDF");
-    await exportReceiptPdf({
-      fileBaseName: fileBaseName(receipt.receiptNumber),
-      paper: receipt.paper,
-      target: receiptRef.current,
-    });
-    setStatus("PDF ready");
+  const printReceipt = () => {
+    updatePrintPageSize(receipt.paper);
+    setStatus("Ready to print");
+    window.print();
   };
 
   return (
     <AppShell
       actions={
         <>
-          <Button className="action-button" icon={Printer} label="Print" onClick={() => window.print()} variant="primary" />
-          <Button className="action-button" icon={FileDown} label="Save PDF" onClick={exportPdf} />
+          <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
         </>
       }
       installAvailable={Boolean(installPrompt)}
@@ -132,7 +127,7 @@ export function ReceiptBuilderView() {
           <NotesSection receipt={receipt} updateField={updateField} />
         </form>
 
-        <ReceiptPreview receipt={receipt} receiptRef={receiptRef} status={status} totals={totals} />
+        <ReceiptPreview receipt={receipt} status={status} totals={totals} />
       </main>
     </AppShell>
   );

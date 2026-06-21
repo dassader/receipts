@@ -7,8 +7,3 @@ export function registerServiceWorker() {
     });
   }
 }
-
-export function fileBaseName(receiptNumber: string) {
-  const safeReceiptNumber = receiptNumber.replace(/[^a-z0-9-_]+/gi, "-").replace(/^-|-$/g, "");
-  return safeReceiptNumber ? `receipt-${safeReceiptNumber}` : "receipt";
-}

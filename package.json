@@ -9,8 +9,6 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
-    "html-to-image": "^1.11.13",
-    "jspdf": "^4.2.1",
     "lucide-preact": "^1.21.0",
     "preact": "^10.29.2"
   },

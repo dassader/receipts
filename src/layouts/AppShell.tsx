@@ -29,7 +29,7 @@ export function AppShell({ actions, children, installAvailable, onInstall }: App
 
       {children}
 
-      <nav aria-label="Export actions" className="action-bar">
+      <nav aria-label="Print action" className="action-bar">
         {actions}
       </nav>
     </div>

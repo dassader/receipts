@@ -1,16 +1,14 @@
-import type { Ref } from "preact";
 import type { ReceiptState, Totals } from "../../types";
 import { getPaperDefinition } from "../../domain/paper";
 import { ReceiptDocument } from "./ReceiptDocument";
 
 type ReceiptPreviewProps = {
   receipt: ReceiptState;
-  receiptRef: Ref<HTMLDivElement>;
   status: string;
   totals: Totals;
 };
 
-export function ReceiptPreview({ receipt, receiptRef, status, totals }: ReceiptPreviewProps) {
+export function ReceiptPreview({ receipt, status, totals }: ReceiptPreviewProps) {
   const paper = getPaperDefinition(receipt.paper);
 
   return (
@@ -23,7 +21,7 @@ export function ReceiptPreview({ receipt, receiptRef, status, totals }: ReceiptP
         <div className="status-pill">{status}</div>
       </div>
       <div className="preview-canvas">
-        <div ref={receiptRef}>
+        <div>
           <ReceiptDocument receipt={receipt} totals={totals} />
         </div>
       </div>

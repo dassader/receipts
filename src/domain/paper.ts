@@ -5,7 +5,6 @@ export type PaperDefinition = {
   label: string;
   shortLabel: string;
   cssPageSize: string;
-  pdfFormat: string | [number, number];
 };
 
 export const paperDefinitions: Record<PaperFormat, PaperDefinition> = {
@@ -14,28 +13,24 @@ export const paperDefinitions: Record<PaperFormat, PaperDefinition> = {
     label: "US Letter",
     shortLabel: "Letter",
     cssPageSize: "letter",
-    pdfFormat: "letter",
   },
   legal: {
     format: "legal",
     label: "US Legal",
     shortLabel: "Legal",
     cssPageSize: "legal",
-    pdfFormat: "legal",
   },
   a4: {
     format: "a4",
     label: "A4",
     shortLabel: "A4",
     cssPageSize: "A4",
-    pdfFormat: "a4",
   },
   a5: {
     format: "a5",
     label: "A5",
     shortLabel: "A5",
     cssPageSize: "A5",
-    pdfFormat: "a5",
   },
 };
 

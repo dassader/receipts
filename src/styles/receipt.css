@@ -14,8 +14,6 @@
   --sheet-preview-width: 720px;
   --sheet-preview-height: 932px;
   --sheet-preview-padding: 46px;
-  --sheet-print-width: 216mm;
-  --sheet-print-height: 279mm;
   --sheet-print-padding: 14mm;
 }
 
@@ -23,8 +21,6 @@
   --sheet-preview-width: 720px;
   --sheet-preview-height: 1186px;
   --sheet-preview-padding: 46px;
-  --sheet-print-width: 216mm;
-  --sheet-print-height: 356mm;
   --sheet-print-padding: 14mm;
 }
 
@@ -32,8 +28,6 @@
   --sheet-preview-width: 706px;
   --sheet-preview-height: 998px;
   --sheet-preview-padding: 46px;
-  --sheet-print-width: 210mm;
-  --sheet-print-height: 297mm;
   --sheet-print-padding: 14mm;
 }
 
@@ -41,8 +35,6 @@
   --sheet-preview-width: 500px;
   --sheet-preview-height: 706px;
   --sheet-preview-padding: 34px;
-  --sheet-print-width: 148mm;
-  --sheet-print-height: 210mm;
   --sheet-print-padding: 10mm;
 }
 
