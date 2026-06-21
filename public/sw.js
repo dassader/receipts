@@ -1,4 +1,4 @@
-const CACHE_NAME = "receipt-studio-v8";
+const CACHE_NAME = "receipt-studio-v9";
 const SCOPE = self.registration.scope;
 const ASSETS = [
   SCOPE,

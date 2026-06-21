@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { ArrowLeft, Printer } from "lucide-preact";
+import { useLocation } from "preact-iso";
 import type { PaperFormat, ReceiptState } from "../types";
 import { getTotals } from "../domain/totals";
 import { updatePrintPageSize } from "../domain/paper";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
+import { appRoutes } from "../routes";
 import { AppShell } from "../layouts/AppShell";
 import { PrintSetupDialog } from "../components/print/PrintSetupDialog";
 import { ReceiptDocument } from "../components/receipt/ReceiptDocument";
 import { Button } from "../components/ui/Button";
 
 export function ReceiptPreviewPage() {
+  const location = useLocation();
   const [receipt, setReceipt] = useState<ReceiptState>(loadReceiptState);
   const [printSetupOpen, setPrintSetupOpen] = useState(false);
   const [draftPaper, setDraftPaper] = useState<PaperFormat>(receipt.paper);
@@ -21,7 +24,7 @@ export function ReceiptPreviewPage() {
   }, [receipt.paper]);
 
   const openEditor = () => {
-    window.location.hash = "";
+    location.route(appRoutes.home);
   };
 
   const openPrintSetup = () => {

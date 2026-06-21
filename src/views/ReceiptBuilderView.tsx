@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { Eye, Plus, Printer, X } from "lucide-preact";
+import { useLocation } from "preact-iso";
 import type { BeforeInstallPromptEvent, LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, getReceiptBlockDefinition, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
+import { appRoutes } from "../routes";
 import { AppShell } from "../layouts/AppShell";
 import { FieldPalette } from "../components/builder/FieldPalette";
 import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
@@ -14,6 +16,7 @@ import { Button, IconButton } from "../components/ui/Button";
 import { ReceiptPreview } from "../components/receipt/ReceiptPreview";
 
 export function ReceiptBuilderView() {
+  const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [status, setStatus] = useState("Saved");
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -126,7 +129,7 @@ export function ReceiptBuilderView() {
 
   const openPreview = () => {
     saveReceiptState(receipt);
-    window.location.hash = "#/preview";
+    location.route(appRoutes.preview);
   };
 
   return (

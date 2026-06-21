@@ -1,20 +1,18 @@
-import { useEffect, useState } from "preact/hooks";
+import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso";
+import { appRoutes, routerScope } from "./routes";
 import { ReceiptBuilderView } from "./views/ReceiptBuilderView";
 import { ReceiptPreviewPage } from "./views/ReceiptPreviewPage";
 
 export function App() {
-  const [route, setRoute] = useState(getRoute);
-
-  useEffect(() => {
-    const handleHashChange = () => setRoute(getRoute());
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  return route === "preview" ? <ReceiptPreviewPage /> : <ReceiptBuilderView />;
-}
-
-function getRoute() {
-  return window.location.hash === "#/preview" ? "preview" : "builder";
+  return (
+    <LocationProvider scope={routerScope}>
+      <ErrorBoundary>
+        <Router>
+          <Route path={appRoutes.home} component={ReceiptBuilderView} />
+          <Route path={appRoutes.preview} component={ReceiptPreviewPage} />
+          <Route default component={ReceiptBuilderView} />
+        </Router>
+      </ErrorBoundary>
+    </LocationProvider>
+  );
 }
