@@ -323,6 +323,7 @@ function renderBlockFields(
             label="Payment"
             onChange={(value) => updateField("paymentMethod", value)}
             options={paymentMethods}
+            placeholder="Payment method"
             value={receipt.paymentMethod}
           />
         </div>

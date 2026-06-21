@@ -34,27 +34,27 @@ function ReceiptBlockView({ block, receipt, totals }: { block: ReceiptBlock; rec
     case "businessName":
       return (
         <header className="receipt-block receipt-business-name">
-          <h2>{valueOrPlaceholder(receipt.sellerName, "Business name")}</h2>
+          <h2>{trimValue(receipt.sellerName)}</h2>
         </header>
       );
     case "businessAddress":
-      return <ReceiptTextBlock label="Address" lines={[valueOrPlaceholder(receipt.sellerAddress, "Business address")]} />;
+      return <ReceiptTextBlock label="Address" lines={[trimValue(receipt.sellerAddress)]} />;
     case "businessPhone":
-      return <ReceiptTextBlock label="Phone" lines={[valueOrPlaceholder(receipt.sellerPhone, "Phone")]} />;
+      return <ReceiptTextBlock label="Phone" lines={[trimValue(receipt.sellerPhone)]} />;
     case "businessEmail":
-      return <ReceiptTextBlock label="Email" lines={[valueOrPlaceholder(receipt.sellerEmail, "Email")]} />;
+      return <ReceiptTextBlock label="Email" lines={[trimValue(receipt.sellerEmail)]} />;
     case "businessWebsite":
-      return <ReceiptTextBlock label="Website" lines={[valueOrPlaceholder(receipt.sellerWebsite, "Website")]} />;
+      return <ReceiptTextBlock label="Website" lines={[trimValue(receipt.sellerWebsite)]} />;
     case "businessId":
-      return <ReceiptTextBlock label="Business ID" lines={[valueOrPlaceholder(receipt.sellerTaxId, "Business ID")]} />;
+      return <ReceiptTextBlock label="Business ID" lines={[trimValue(receipt.sellerTaxId)]} />;
     case "receiptNumber":
-      return <ReceiptTextBlock label="Receipt" lines={[valueOrPlaceholder(receipt.receiptNumber, "Receipt no.")]} strong />;
+      return <ReceiptTextBlock label="Receipt" lines={[trimValue(receipt.receiptNumber)]} strong />;
     case "receiptDate":
       return <ReceiptTextBlock label="Date" lines={[formatDate(receipt.receiptDate)]} strong />;
     case "customerName":
-      return <ReceiptTextBlock label="Bill to" lines={[valueOrPlaceholder(receipt.customerName, "Customer")]} strong />;
+      return <ReceiptTextBlock label="Bill to" lines={[trimValue(receipt.customerName)]} strong />;
     case "customerEmail":
-      return <ReceiptTextBlock label="Customer email" lines={[valueOrPlaceholder(receipt.customerEmail, "Customer email")]} />;
+      return <ReceiptTextBlock label="Customer email" lines={[trimValue(receipt.customerEmail)]} />;
     case "taxRate":
     case "discount":
     case "amountPaid":
@@ -82,13 +82,13 @@ function ReceiptBlockView({ block, receipt, totals }: { block: ReceiptBlock; rec
         </section>
       );
     case "paymentMethod":
-      return <ReceiptTextBlock label="Payment" lines={[valueOrPlaceholder(receipt.paymentMethod, "Payment method")]} strong />;
+      return <ReceiptTextBlock label="Payment" lines={[trimValue(receipt.paymentMethod)]} strong />;
     case "cashier":
-      return <ReceiptTextBlock label="Cashier" lines={[valueOrPlaceholder(receipt.cashier, "Cashier")]} strong />;
+      return <ReceiptTextBlock label="Cashier" lines={[trimValue(receipt.cashier)]} strong />;
     case "note":
-      return <p className="receipt-block receipt-note">{valueOrPlaceholder(receipt.note, "Receipt note")}</p>;
+      return <p className="receipt-block receipt-note">{trimValue(receipt.note)}</p>;
     case "footer":
-      return <footer className="receipt-block">{valueOrPlaceholder(receipt.footer, "Thank you for your business.")}</footer>;
+      return <footer className="receipt-block">{trimValue(receipt.footer)}</footer>;
   }
 }
 
@@ -111,7 +111,7 @@ function ReceiptItemsTable({ currency, items }: { currency: string; items: LineI
         {items.map((item) => (
           <tr key={item.id}>
             <td>
-              {valueOrPlaceholder(item.description, "Item")}
+              {trimValue(item.description)}
             </td>
             <td>{formatQuantity(item.quantity)}</td>
             <td>{formatMoney(item.unitPrice, currency)}</td>
@@ -148,6 +148,6 @@ function ReceiptTotal({ label, value }: { label: string; value: string }) {
   );
 }
 
-function valueOrPlaceholder(value: string, placeholder: string) {
-  return value.trim() || placeholder;
+function trimValue(value: string) {
+  return value.trim();
 }

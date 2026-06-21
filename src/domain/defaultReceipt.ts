@@ -1,47 +1,28 @@
 import type { ReceiptState } from "../types";
-import { createDefaultReceiptBlocks } from "./blocks";
-import { createId } from "./ids";
 
 export function createDefaultReceipt(): ReceiptState {
-  const items = [
-    {
-      id: createId(),
-      description: "Service labor",
-      quantity: 1,
-      unitPrice: 85,
-    },
-    {
-      id: createId(),
-      description: "Parts",
-      quantity: 2,
-      unitPrice: 12.5,
-    },
-  ];
-
   return {
-    blocks: createDefaultReceiptBlocks(items),
-    sellerName: "Evergreen Services LLC",
-    sellerAddress: "1315 74th St, Brooklyn, NY 11228",
-    sellerPhone: "(718) 555-0142",
-    sellerEmail: "billing@example.com",
-    sellerWebsite: "example.com",
+    blocks: [],
+    sellerName: "",
+    sellerAddress: "",
+    sellerPhone: "",
+    sellerEmail: "",
+    sellerWebsite: "",
     sellerTaxId: "",
-    customerName: "Walk-in customer",
+    customerName: "",
     customerEmail: "",
-    receiptNumber: `R-${new Date().toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(
-      100 + Math.random() * 900,
-    )}`,
-    receiptDate: new Date().toISOString().slice(0, 10),
-    paymentMethod: "Credit card",
-    cashier: "Front desk",
+    receiptNumber: "",
+    receiptDate: "",
+    paymentMethod: "",
+    cashier: "",
     paper: "letter",
     currency: "USD",
-    taxRate: 8.875,
+    taxRate: 0,
     discount: 0,
     paidInFull: true,
     amountPaid: 0,
-    note: "No refunds after 30 days with original receipt.",
-    footer: "Thank you for your business.",
-    items,
+    note: "",
+    footer: "",
+    items: [],
   };
 }

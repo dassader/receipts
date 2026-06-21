@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import { Eye, Plus, Printer, X } from "lucide-preact";
 import { useLocation } from "preact-iso";
 import type { LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
-import { createReceiptBlock, getReceiptBlockDefinition, sortReceiptBlocks } from "../domain/blocks";
+import { createReceiptBlock, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
@@ -13,12 +13,10 @@ import { FieldPalette } from "../components/builder/FieldPalette";
 import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
 import { PrintSetupDialog } from "../components/print/PrintSetupDialog";
 import { Button, IconButton } from "../components/ui/Button";
-import { ReceiptPreview } from "../components/receipt/ReceiptPreview";
 
 export function ReceiptBuilderView() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
-  const [status, setStatus] = useState("Saved");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [printSetupOpen, setPrintSetupOpen] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
@@ -27,10 +25,9 @@ export function ReceiptBuilderView() {
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
 
   useEffect(() => {
-    saveReceiptState(receipt);
     document.body.dataset.paper = receipt.paper;
     updatePrintPageSize(receipt.paper);
-  }, [receipt]);
+  }, [receipt.paper]);
 
   useEffect(() => {
     const handleBeforePrint = () => updatePrintPageSize(receipt.paper);
@@ -39,29 +36,31 @@ export function ReceiptBuilderView() {
     return () => window.removeEventListener("beforeprint", handleBeforePrint);
   }, [receipt.paper]);
 
+  const updateReceipt = (updater: (current: ReceiptState) => ReceiptState) => {
+    setReceipt((current) => {
+      const nextReceipt = updater(current);
+      saveReceiptState(nextReceipt);
+      return nextReceipt;
+    });
+  };
+
   const updateField = <K extends keyof ReceiptState>(field: K, value: ReceiptState[K]) => {
-    setReceipt((current) =>
+    updateReceipt((current) =>
       field === "amountPaid" ? { ...current, amountPaid: value as number, paidInFull: false } : { ...current, [field]: value },
     );
-    setStatus("Saved");
   };
 
   const addBlock = (type: ReceiptBlockType) => {
-    const definition = getReceiptBlockDefinition(type);
-
-    setReceipt((current) => ({
+    updateReceipt((current) => ({
       ...current,
       ...createNextReceiptBlocks(current, type),
     }));
 
     setPaletteOpen(false);
-    setStatus(`${definition.label} added`);
   };
 
   const removeBlock = (block: ReceiptBlock) => {
-    const definition = getReceiptBlockDefinition(block.type);
-
-    setReceipt((current) => {
+    updateReceipt((current) => {
       if (block.type !== "item") {
         return { ...current, blocks: current.blocks.filter((candidate) => candidate.id !== block.id) };
       }
@@ -76,22 +75,18 @@ export function ReceiptBuilderView() {
         items: current.items.filter((item) => item.id !== block.itemId),
       };
     });
-
-    setStatus(`${definition.label} removed`);
   };
 
   const updateItem = <K extends keyof LineItem>(id: string, field: K, value: LineItem[K]) => {
-    setReceipt((current) => ({
+    updateReceipt((current) => ({
       ...current,
       items: current.items.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     }));
-    setStatus("Saved");
   };
 
   const printReceipt = () => {
     setDraftPaper(receipt.paper);
     setPrintSetupOpen(true);
-    setStatus("Choose paper");
   };
 
   const confirmPrint = () => {
@@ -102,14 +97,12 @@ export function ReceiptBuilderView() {
     document.body.dataset.paper = draftPaper;
     updatePrintPageSize(draftPaper);
     setPrintSetupOpen(false);
-    setStatus("Ready to print");
     requestAnimationFrame(() => window.print());
   };
 
   const openPreview = () => {
     setDraftPaper(receipt.paper);
     setPreviewSetupOpen(true);
-    setStatus("Choose paper");
   };
 
   const confirmPreview = () => {
@@ -166,8 +159,6 @@ export function ReceiptBuilderView() {
             <section className="empty-builder">No fields selected</section>
           )}
         </form>
-
-        <ReceiptPreview receipt={receipt} status={status} totals={totals} />
       </main>
 
       {printSetupOpen ? (
@@ -198,7 +189,7 @@ function createNextReceiptBlocks(receipt: ReceiptState, type: ReceiptBlockType) 
   if (type === "item") {
     const item: LineItem = {
       id: createId(),
-      description: "New item",
+      description: "",
       quantity: 1,
       unitPrice: 0,
     };

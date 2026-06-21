@@ -24,6 +24,7 @@ type SelectFieldProps = {
   label: string;
   onChange: (value: string) => void;
   options: string[];
+  placeholder?: string;
   value: string;
 };
 
@@ -72,11 +73,12 @@ export function NumberField({ className = "", disabled = false, label, onChange,
   );
 }
 
-export function SelectField({ className = "", label, onChange, options, value }: SelectFieldProps) {
+export function SelectField({ className = "", label, onChange, options, placeholder, value }: SelectFieldProps) {
   return (
     <label className={`field ${className}`}>
       <span>{label}</span>
       <select onChange={(event) => onChange(event.currentTarget.value)} value={value}>
+        {placeholder ? <option value="">{placeholder}</option> : null}
         {options.map((option) => (
           <option key={option} value={option}>
             {option}

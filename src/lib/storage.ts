@@ -17,8 +17,12 @@ export function loadReceiptState(): ReceiptState {
 
   try {
     const parsed = JSON.parse(stored) as Partial<ReceiptState>;
+    if (isLegacyDemoReceipt(parsed)) {
+      return fallback;
+    }
+
     const items =
-      Array.isArray(parsed.items) && parsed.items.length > 0
+      Array.isArray(parsed.items)
         ? parsed.items.map((item) => ({
             id: item.id || createId(),
             description: item.description || "",
@@ -41,4 +45,17 @@ export function loadReceiptState(): ReceiptState {
 
 export function saveReceiptState(receipt: ReceiptState) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(receipt));
+}
+
+function isLegacyDemoReceipt(receipt: Partial<ReceiptState>) {
+  return (
+    receipt.sellerName === "Evergreen Services LLC" &&
+    receipt.customerName === "Walk-in customer" &&
+    receipt.paymentMethod === "Credit card" &&
+    receipt.cashier === "Front desk" &&
+    receipt.taxRate === 8.875 &&
+    Array.isArray(receipt.items) &&
+    receipt.items.some((item) => item.description === "Service labor") &&
+    receipt.items.some((item) => item.description === "Parts")
+  );
 }

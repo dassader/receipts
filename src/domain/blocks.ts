@@ -174,29 +174,6 @@ export function sortReceiptBlocks(blocks: ReceiptBlock[]) {
     .map(({ block }) => block);
 }
 
-export function createDefaultReceiptBlocks(items: LineItem[]) {
-  return sortReceiptBlocks([
-    createReceiptBlock("businessName"),
-    createReceiptBlock("businessAddress"),
-    createReceiptBlock("businessPhone"),
-    createReceiptBlock("businessEmail"),
-    createReceiptBlock("businessWebsite"),
-    createReceiptBlock("receiptNumber"),
-    createReceiptBlock("receiptDate"),
-    createReceiptBlock("customerName"),
-    createReceiptBlock("customerEmail"),
-    ...items.map((item) => createReceiptBlock("item", item.id)),
-    createReceiptBlock("taxRate"),
-    createReceiptBlock("discount"),
-    createReceiptBlock("amountPaid"),
-    createReceiptBlock("totalSummary"),
-    createReceiptBlock("paymentMethod"),
-    createReceiptBlock("cashier"),
-    createReceiptBlock("note"),
-    createReceiptBlock("footer"),
-  ]);
-}
-
 function getMigratedBlockTypes(rawType: unknown): ReceiptBlockType[] {
   if (rawType === "businessContact") {
     return ["businessPhone", "businessEmail", "businessWebsite"];
@@ -268,7 +245,7 @@ export function normalizeReceiptBlocks(value: unknown, items: LineItem[]) {
     }
   }
 
-  return blocks.length > 0 ? sortReceiptBlocks(blocks) : createDefaultReceiptBlocks(items);
+  return sortReceiptBlocks(blocks);
 }
 
 export function getOrderedReceiptItems(receipt: ReceiptState) {
