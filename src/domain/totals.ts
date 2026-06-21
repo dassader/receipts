@@ -1,8 +1,10 @@
 import type { ReceiptState, Totals } from "../types";
+import { getOrderedReceiptItems } from "./blocks";
 
 export function getTotals(receipt: ReceiptState): Totals {
-  const subtotal = receipt.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const taxableSubtotal = receipt.items.reduce(
+  const items = getOrderedReceiptItems(receipt);
+  const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const taxableSubtotal = items.reduce(
     (sum, item) => sum + (item.taxable ? item.quantity * item.unitPrice : 0),
     0,
   );

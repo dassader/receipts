@@ -78,7 +78,10 @@
   gap: 4px;
 }
 
-.receipt span,
+.receipt-block > span,
+.receipt-meta span,
+.receipt-payment span,
+.receipt-totals span,
 .receipt-table small {
   color: #71717a;
   font-size: 0.72rem;
@@ -199,6 +202,76 @@
 }
 
 .a5 .receipt-business h2 {
+  font-size: 1.55rem;
+}
+
+.receipt-block {
+  padding: 13px 0;
+  border-bottom: 1px dashed #a8a29e;
+}
+
+.receipt-block:first-child {
+  padding-top: 0;
+}
+
+.receipt-block:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.receipt-business-name {
+  text-align: center;
+}
+
+.receipt-business-name h2 {
+  margin: 0;
+  color: #18181b;
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.receipt-text-block p {
+  margin: 5px 0 0;
+  color: #52525b;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.receipt-text-block .strong-lines {
+  color: #18181b;
+  font-weight: 750;
+}
+
+.receipt-table.receipt-block {
+  border-bottom: 1px dashed #a8a29e;
+}
+
+.receipt-table.receipt-block:last-child {
+  border-bottom: 0;
+}
+
+.receipt-note.receipt-block {
+  margin: 13px 0 0;
+}
+
+.receipt footer.receipt-block {
+  margin-top: 0;
+}
+
+.letter .receipt-business-name,
+.legal .receipt-business-name,
+.a4 .receipt-business-name,
+.a5 .receipt-business-name {
+  text-align: left;
+}
+
+.letter .receipt-business-name h2,
+.legal .receipt-business-name h2,
+.a4 .receipt-business-name h2 {
+  font-size: 2rem;
+}
+
+.a5 .receipt-business-name h2 {
   font-size: 1.55rem;
 }
 

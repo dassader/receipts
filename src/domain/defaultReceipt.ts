@@ -1,8 +1,27 @@
 import type { ReceiptState } from "../types";
+import { createDefaultReceiptBlocks } from "./blocks";
 import { createId } from "./ids";
 
 export function createDefaultReceipt(): ReceiptState {
+  const items = [
+    {
+      id: createId(),
+      description: "Service labor",
+      quantity: 1,
+      unitPrice: 85,
+      taxable: true,
+    },
+    {
+      id: createId(),
+      description: "Parts",
+      quantity: 2,
+      unitPrice: 12.5,
+      taxable: true,
+    },
+  ];
+
   return {
+    blocks: createDefaultReceiptBlocks(items),
     sellerName: "Evergreen Services LLC",
     sellerAddress: "1315 74th St, Brooklyn, NY 11228",
     sellerPhone: "(718) 555-0142",
@@ -25,21 +44,6 @@ export function createDefaultReceipt(): ReceiptState {
     amountPaid: 0,
     note: "No refunds after 30 days with original receipt.",
     footer: "Thank you for your business.",
-    items: [
-      {
-        id: createId(),
-        description: "Service labor",
-        quantity: 1,
-        unitPrice: 85,
-        taxable: true,
-      },
-      {
-        id: createId(),
-        description: "Parts",
-        quantity: 2,
-        unitPrice: 12.5,
-        taxable: true,
-      },
-    ],
+    items,
   };
 }

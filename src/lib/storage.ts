@@ -1,4 +1,5 @@
 import type { ReceiptState } from "../types";
+import { normalizeReceiptBlocks } from "../domain/blocks";
 import { createDefaultReceipt } from "../domain/defaultReceipt";
 import { createId } from "../domain/ids";
 import { normalizeNumber } from "../domain/format";
@@ -16,21 +17,23 @@ export function loadReceiptState(): ReceiptState {
 
   try {
     const parsed = JSON.parse(stored) as Partial<ReceiptState>;
+    const items =
+      Array.isArray(parsed.items) && parsed.items.length > 0
+        ? parsed.items.map((item) => ({
+            id: item.id || createId(),
+            description: item.description || "",
+            quantity: normalizeNumber(item.quantity, 1),
+            unitPrice: normalizeNumber(item.unitPrice, 0),
+            taxable: item.taxable !== false,
+          }))
+        : fallback.items;
 
     return {
       ...fallback,
       ...parsed,
+      blocks: normalizeReceiptBlocks(parsed.blocks, items),
       paper: normalizePaperFormat(parsed.paper),
-      items:
-        Array.isArray(parsed.items) && parsed.items.length > 0
-          ? parsed.items.map((item) => ({
-              id: item.id || createId(),
-              description: item.description || "",
-              quantity: normalizeNumber(item.quantity, 1),
-              unitPrice: normalizeNumber(item.unitPrice, 0),
-              taxable: item.taxable !== false,
-            }))
-          : fallback.items,
+      items,
     };
   } catch {
     return fallback;

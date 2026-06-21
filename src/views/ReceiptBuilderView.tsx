@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { Printer } from "lucide-preact";
-import type { BeforeInstallPromptEvent, LineItem, ReceiptState } from "../types";
+import { Plus, Printer, X } from "lucide-preact";
+import type { BeforeInstallPromptEvent, LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
+import { createReceiptBlock, getReceiptBlockDefinition, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
 import { AppShell } from "../layouts/AppShell";
-import { Button } from "../components/ui/Button";
-import { BusinessSection } from "../components/forms/BusinessSection";
-import { SaleSection } from "../components/forms/SaleSection";
-import { ItemsSection } from "../components/forms/ItemsSection";
-import { TotalsSection } from "../components/forms/TotalsSection";
-import { NotesSection } from "../components/forms/NotesSection";
+import { FieldPalette } from "../components/builder/FieldPalette";
+import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
+import { Button, IconButton } from "../components/ui/Button";
+import { SheetSection } from "../components/forms/SheetSection";
 import { ReceiptPreview } from "../components/receipt/ReceiptPreview";
 
 export function ReceiptBuilderView() {
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [status, setStatus] = useState("Saved");
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
+  const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
 
   useEffect(() => {
     saveReceiptState(receipt);
@@ -48,33 +49,38 @@ export function ReceiptBuilderView() {
     setStatus("Saved");
   };
 
-  const addItem = () => {
+  const addBlock = (type: ReceiptBlockType) => {
+    const definition = getReceiptBlockDefinition(type);
+
     setReceipt((current) => ({
       ...current,
-      items: [
-        ...current.items,
-        {
-          id: createId(),
-          description: "New item",
-          quantity: 1,
-          unitPrice: 0,
-          taxable: true,
-        },
-      ],
+      ...createNextReceiptBlocks(current, type),
     }));
-    setStatus("Item added");
+
+    setPaletteOpen(false);
+    setStatus(`${definition.label} added`);
   };
 
-  const removeItem = (id: string) => {
+  const removeBlock = (block: ReceiptBlock) => {
+    const definition = getReceiptBlockDefinition(block.type);
+
     setReceipt((current) => {
-      if (current.items.length === 1) {
-        setStatus("Keep one item");
+      if (block.type !== "item") {
+        return { ...current, blocks: current.blocks.filter((candidate) => candidate.id !== block.id) };
+      }
+
+      if (!block.itemId) {
         return current;
       }
 
-      setStatus("Item removed");
-      return { ...current, items: current.items.filter((item) => item.id !== id) };
+      return {
+        ...current,
+        blocks: current.blocks.filter((candidate) => candidate.id !== block.id),
+        items: current.items.filter((item) => item.id !== block.itemId),
+      };
     });
+
+    setStatus(`${definition.label} removed`);
   };
 
   const updateItem = <K extends keyof LineItem>(id: string, field: K, value: LineItem[K]) => {
@@ -113,22 +119,73 @@ export function ReceiptBuilderView() {
       onInstall={installApp}
     >
       <main className="workspace">
-        <form autoComplete="on" className="tool-panel">
-          <BusinessSection receipt={receipt} updateField={updateField} />
-          <SaleSection receipt={receipt} updateField={updateField} />
-          <ItemsSection
-            currency={receipt.currency}
-            items={receipt.items}
-            onAddItem={addItem}
-            onRemoveItem={removeItem}
-            onUpdateItem={updateItem}
-          />
-          <TotalsSection receipt={receipt} totals={totals} updateField={updateField} />
-          <NotesSection receipt={receipt} updateField={updateField} />
+        <form autoComplete="on" className="tool-panel builder-panel">
+          <div className="builder-toolbar">
+            <div>
+              <p className="eyebrow">Constructor</p>
+              <h2>Receipt fields</h2>
+            </div>
+            <IconButton
+              className="builder-add-button"
+              icon={paletteOpen ? X : Plus}
+              onClick={() => setPaletteOpen((current) => !current)}
+              title={paletteOpen ? "Close fields" : "Add field"}
+              variant="primary"
+            />
+          </div>
+
+          {paletteOpen ? <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} /> : null}
+
+          <SheetSection receipt={receipt} updateField={updateField} />
+
+          {receipt.blocks.length > 0 ? (
+            receipt.blocks.map((block) => (
+              <ReceiptBlockEditor
+                block={block}
+                key={block.id}
+                onRemoveBlock={removeBlock}
+                onUpdateField={updateField}
+                onUpdateItem={updateItem}
+                receipt={receipt}
+                totals={totals}
+              />
+            ))
+          ) : (
+            <section className="empty-builder">No fields selected</section>
+          )}
         </form>
 
         <ReceiptPreview receipt={receipt} status={status} totals={totals} />
       </main>
     </AppShell>
   );
+}
+
+function createNextReceiptBlocks(receipt: ReceiptState, type: ReceiptBlockType) {
+  if (type === "item") {
+    const item: LineItem = {
+      id: createId(),
+      description: "New item",
+      quantity: 1,
+      unitPrice: 0,
+      taxable: true,
+    };
+
+    return {
+      blocks: sortReceiptBlocks([...receipt.blocks, createReceiptBlock("item", item.id)]),
+      items: [...receipt.items, item],
+    };
+  }
+
+  if (receipt.blocks.some((block) => block.type === type)) {
+    return {
+      blocks: receipt.blocks,
+      items: receipt.items,
+    };
+  }
+
+  return {
+    blocks: sortReceiptBlocks([...receipt.blocks, createReceiptBlock(type)]),
+    items: receipt.items,
+  };
 }

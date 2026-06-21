@@ -8,7 +8,27 @@ export type LineItem = {
   taxable: boolean;
 };
 
+export type ReceiptBlockType =
+  | "businessName"
+  | "businessAddress"
+  | "businessContact"
+  | "businessId"
+  | "receiptDetails"
+  | "customer"
+  | "item"
+  | "totals"
+  | "payment"
+  | "note"
+  | "footer";
+
+export type ReceiptBlock = {
+  id: string;
+  itemId?: string;
+  type: ReceiptBlockType;
+};
+
 export type ReceiptState = {
+  blocks: ReceiptBlock[];
   sellerName: string;
   sellerAddress: string;
   sellerPhone: string;
