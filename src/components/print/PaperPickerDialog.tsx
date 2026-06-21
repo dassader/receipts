@@ -33,7 +33,7 @@ export function PaperPickerDialog({ onCancel, onSelect }: PaperPickerDialogProps
         </div>
 
         <div className="print-setup-actions">
-          <Button className="cancel-button" label="Cancel" onClick={onCancel} />
+          <Button className="cancel-button" label="Cancel" onClick={onCancel} variant="danger" />
         </div>
       </section>
     </div>
