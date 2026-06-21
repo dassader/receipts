@@ -11,30 +11,30 @@
 }
 
 .receipt.letter {
-  --sheet-preview-width: 720px;
-  --sheet-preview-height: 932px;
-  --sheet-preview-padding: 46px;
+  --sheet-preview-width: 8.5in;
+  --sheet-preview-height: 11in;
+  --sheet-preview-padding: 14mm;
   --sheet-print-padding: 14mm;
 }
 
 .receipt.legal {
-  --sheet-preview-width: 720px;
-  --sheet-preview-height: 1186px;
-  --sheet-preview-padding: 46px;
+  --sheet-preview-width: 8.5in;
+  --sheet-preview-height: 14in;
+  --sheet-preview-padding: 14mm;
   --sheet-print-padding: 14mm;
 }
 
 .receipt.a4 {
-  --sheet-preview-width: 706px;
-  --sheet-preview-height: 998px;
-  --sheet-preview-padding: 46px;
+  --sheet-preview-width: 210mm;
+  --sheet-preview-height: 297mm;
+  --sheet-preview-padding: 14mm;
   --sheet-print-padding: 14mm;
 }
 
 .receipt.a5 {
-  --sheet-preview-width: 500px;
-  --sheet-preview-height: 706px;
-  --sheet-preview-padding: 34px;
+  --sheet-preview-width: 148mm;
+  --sheet-preview-height: 210mm;
+  --sheet-preview-padding: 10mm;
   --sheet-print-padding: 10mm;
 }
 
@@ -284,29 +284,6 @@
 .a5 .receipt-table,
 .a5 .receipt strong {
   font-size: 0.98rem;
-}
-
-@media (max-width: 760px) {
-  .receipt {
-    width: 100%;
-    padding: 28px 20px;
-  }
-
-  .receipt.letter {
-    min-height: 760px;
-  }
-
-  .receipt.legal {
-    min-height: 980px;
-  }
-
-  .receipt.a4 {
-    min-height: 820px;
-  }
-
-  .receipt.a5 {
-    min-height: 600px;
-  }
 }
 
 .preview-page .receipt {
