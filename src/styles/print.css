@@ -1,0 +1,45 @@
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .topbar,
+  .tool-panel,
+  .preview-header,
+  .action-bar {
+    display: none !important;
+  }
+
+  .app-shell,
+  .workspace,
+  .preview-panel,
+  .preview-canvas {
+    display: block;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    border: 0;
+    background: #ffffff;
+    max-width: none;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .receipt {
+    box-shadow: none;
+    margin: 0 auto;
+  }
+
+  .receipt.thermal {
+    width: 80mm;
+  }
+
+  .receipt.letter {
+    width: 100%;
+    min-height: auto;
+  }
+}

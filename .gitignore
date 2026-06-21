@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+dist/
+
+# Local secrets
+.env
+.env.local
+.env.*.local

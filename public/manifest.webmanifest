@@ -1,0 +1,19 @@
+{
+  "name": "Receipt Studio",
+  "short_name": "Receipts",
+  "description": "Create printable receipts on a phone and export them as PDF or PNG.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ef",
+  "theme_color": "#f7f4ef",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "finance"]
+}
