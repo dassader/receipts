@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { Eye, Plus, Printer, X } from "lucide-preact";
 import { useLocation } from "preact-iso";
-import type { BeforeInstallPromptEvent, LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
+import type { LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, getReceiptBlockDefinition, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
@@ -19,7 +19,6 @@ export function ReceiptBuilderView() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [status, setStatus] = useState("Saved");
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [printSetupOpen, setPrintSetupOpen] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
@@ -32,16 +31,6 @@ export function ReceiptBuilderView() {
     document.body.dataset.paper = receipt.paper;
     updatePrintPageSize(receipt.paper);
   }, [receipt]);
-
-  useEffect(() => {
-    const handleInstallPrompt = (event: Event) => {
-      event.preventDefault();
-      setInstallPrompt(event as BeforeInstallPromptEvent);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleInstallPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
-  }, []);
 
   useEffect(() => {
     const handleBeforePrint = () => updatePrintPageSize(receipt.paper);
@@ -99,17 +88,6 @@ export function ReceiptBuilderView() {
     setStatus("Saved");
   };
 
-  const installApp = async () => {
-    if (!installPrompt) {
-      setStatus("Install unavailable");
-      return;
-    }
-
-    await installPrompt.prompt();
-    await installPrompt.userChoice;
-    setInstallPrompt(null);
-  };
-
   const printReceipt = () => {
     setDraftPaper(receipt.paper);
     setPrintSetupOpen(true);
@@ -153,8 +131,6 @@ export function ReceiptBuilderView() {
           <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
         </>
       }
-      installAvailable={Boolean(installPrompt)}
-      onInstall={installApp}
     >
       <main className="workspace">
         <form autoComplete="on" className="tool-panel builder-panel">

@@ -1,64 +1,24 @@
 .app-shell {
   min-height: 100vh;
-  padding: 18px;
-  padding-bottom: 104px;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  max-width: 1380px;
-  margin: 0 auto 18px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: #ffffff;
-  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.18);
-  flex: 0 0 auto;
-}
-
-.brand h1,
-.preview-header h2 {
-  margin: 0;
-  color: var(--ink);
-  letter-spacing: 0;
-}
-
-.brand h1 {
-  font-size: 2.1rem;
-  line-height: 1;
+  padding: 14px;
+  padding-bottom: 96px;
 }
 
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(390px, 0.86fr);
-  gap: 18px;
-  max-width: 1380px;
+  gap: 14px;
+  max-width: 1320px;
   margin: 0 auto;
   align-items: start;
 }
 
 .tool-panel,
 .preview-panel {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(222, 215, 204, 0.95);
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: none;
 }
 
 .tool-panel {
@@ -122,7 +82,10 @@
 }
 
 .preview-header h2 {
+  margin: 0;
+  color: var(--ink);
   font-size: 1.05rem;
+  letter-spacing: 0;
 }
 
 .status-pill {
@@ -139,23 +102,13 @@
 
 .preview-canvas {
   min-height: 640px;
-  max-height: calc(100vh - 160px);
+  max-height: calc(100vh - 92px);
   overflow: auto;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 28px 16px;
-  background:
-    linear-gradient(45deg, rgba(31, 41, 55, 0.04) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(31, 41, 55, 0.04) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(31, 41, 55, 0.04) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(31, 41, 55, 0.04) 75%);
-  background-size: 24px 24px;
-  background-position:
-    0 0,
-    0 12px,
-    12px -12px,
-    -12px 0;
+  background: #f3f4f6;
 }
 
 .preview-page {
@@ -169,7 +122,7 @@
 .preview-page-viewer {
   width: 100%;
   max-width: 100vw;
-  height: calc(100dvh - 126px);
+  height: calc(100dvh - 96px);
   min-height: 480px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -177,17 +130,7 @@
   touch-action: pan-x pan-y;
   scrollbar-gutter: stable;
   padding: 24px;
-  background:
-    linear-gradient(45deg, rgba(31, 41, 55, 0.04) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(31, 41, 55, 0.04) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(31, 41, 55, 0.04) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(31, 41, 55, 0.04) 75%);
-  background-size: 24px 24px;
-  background-position:
-    0 0,
-    0 12px,
-    12px -12px,
-    -12px 0;
+  background: #f3f4f6;
 }
 
 .preview-page-canvas {
@@ -213,7 +156,7 @@
   border: 1px solid rgba(222, 215, 204, 0.95);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 18px 60px rgba(31, 41, 55, 0.2);
+  box-shadow: 0 10px 32px rgba(31, 41, 55, 0.14);
   backdrop-filter: blur(18px);
 }
 
@@ -238,16 +181,8 @@
 
 @media (max-width: 760px) {
   .app-shell {
-    padding: 12px;
+    padding: 10px;
     padding-bottom: 102px;
-  }
-
-  .topbar {
-    align-items: flex-start;
-  }
-
-  .brand h1 {
-    font-size: 1.45rem;
   }
 
   .field-grid,
@@ -292,7 +227,7 @@
   }
 
   .preview-page-viewer {
-    height: calc(100dvh - 112px);
+    height: calc(100dvh - 92px);
     min-height: 420px;
     padding: 16px 10px;
   }
@@ -313,15 +248,6 @@
 }
 
 @media (max-width: 430px) {
-  .brand-mark {
-    width: 40px;
-    height: 40px;
-  }
-
-  .install-button span {
-    display: none;
-  }
-
   .form-section {
     padding: 15px;
   }

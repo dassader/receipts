@@ -50,8 +50,6 @@ export function ReceiptPreviewPage() {
           <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
         </>
       }
-      installAvailable={false}
-      onInstall={() => undefined}
     >
       <main className="preview-page">
         <div aria-label="Receipt preview" className="preview-page-viewer">

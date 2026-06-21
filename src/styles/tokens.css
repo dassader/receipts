@@ -7,15 +7,15 @@
   -webkit-font-smoothing: antialiased;
   --ink: #1f2937;
   --muted: #6b7280;
-  --paper: #fffdf8;
+  --paper: #ffffff;
   --panel: #ffffff;
-  --line: #ded7cc;
+  --line: #e5e7eb;
   --blue: #2563eb;
   --blue-dark: #1d4ed8;
   --green: #087f5b;
   --amber: #b45309;
   --rose: #be123c;
-  --bg: #f7f4ef;
-  --shadow: 0 24px 70px rgba(31, 41, 55, 0.12);
+  --bg: #f6f7f9;
+  --shadow: 0 12px 34px rgba(31, 41, 55, 0.08);
   --radius: 8px;
 }

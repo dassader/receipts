@@ -1,4 +1,3 @@
-.brand-mark svg,
 .button svg,
 .icon-button svg,
 .palette-option svg,
@@ -10,10 +9,10 @@
 
 .eyebrow {
   margin: 0 0 4px;
-  color: var(--amber);
+  color: var(--muted);
   font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -77,9 +76,9 @@
 .field select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid #d6cec0;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fffdf9;
+  background: #ffffff;
   color: var(--ink);
   padding: 10px 11px;
   outline: none;
@@ -168,7 +167,7 @@
   gap: 10px;
   padding: 14px 18px 18px;
   border-bottom: 1px solid var(--line);
-  background: #f8fafc;
+  background: #f9fafb;
 }
 
 .palette-option {
@@ -178,7 +177,7 @@
   align-items: center;
   gap: 3px 9px;
   min-height: 68px;
-  border: 1px solid #d8dee8;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   background: #ffffff;
   color: var(--ink);
@@ -228,9 +227,9 @@
   justify-content: center;
   gap: 8px;
   min-height: 42px;
-  border: 1px solid #d6cec0;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fffdf9;
+  background: #ffffff;
   color: var(--ink);
   font-weight: 800;
 }
@@ -253,9 +252,9 @@
   gap: 10px;
   min-height: 70px;
   padding: 13px 12px;
-  border: 1px solid #d6cec0;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fffdf9;
+  background: #ffffff;
 }
 
 .toggle-field input {
