@@ -1,45 +1,44 @@
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo } from "preact/hooks";
 import { ArrowLeft, Printer } from "lucide-preact";
 import { useLocation } from "preact-iso";
-import type { PaperFormat, ReceiptState } from "../types";
+import type { PaperFormat } from "../types";
 import { getTotals } from "../domain/totals";
-import { updatePrintPageSize } from "../domain/paper";
+import { normalizePaperFormat, updatePrintPageSize } from "../domain/paper";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
 import { appRoutes } from "../routes";
 import { AppShell } from "../layouts/AppShell";
-import { PrintSetupDialog } from "../components/print/PrintSetupDialog";
 import { ReceiptDocument } from "../components/receipt/ReceiptDocument";
 import { Button } from "../components/ui/Button";
 
 export function ReceiptPreviewPage() {
   const location = useLocation();
-  const [receipt, setReceipt] = useState<ReceiptState>(loadReceiptState);
-  const [printSetupOpen, setPrintSetupOpen] = useState(false);
-  const [draftPaper, setDraftPaper] = useState<PaperFormat>(receipt.paper);
+  const paper = getPaperFromQuery(location.query.paper);
+  const savedReceipt = useMemo(() => loadReceiptState(), []);
+  const receipt = useMemo(() => (paper ? { ...savedReceipt, paper } : savedReceipt), [paper, savedReceipt]);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
 
   useEffect(() => {
-    document.body.dataset.paper = receipt.paper;
-    updatePrintPageSize(receipt.paper);
-  }, [receipt.paper]);
+    if (!paper) {
+      location.route(appRoutes.home, true);
+      return;
+    }
+
+    document.body.dataset.paper = paper;
+    updatePrintPageSize(paper);
+  }, [location, paper]);
+
+  if (!paper) {
+    return null;
+  }
 
   const openEditor = () => {
     location.route(appRoutes.home);
   };
 
-  const openPrintSetup = () => {
-    setDraftPaper(receipt.paper);
-    setPrintSetupOpen(true);
-  };
-
-  const confirmPrint = () => {
-    const nextReceipt = { ...receipt, paper: draftPaper };
-
-    setReceipt(nextReceipt);
-    saveReceiptState(nextReceipt);
-    document.body.dataset.paper = draftPaper;
-    updatePrintPageSize(draftPaper);
-    setPrintSetupOpen(false);
+  const printReceipt = () => {
+    saveReceiptState(receipt);
+    document.body.dataset.paper = paper;
+    updatePrintPageSize(paper);
     requestAnimationFrame(() => window.print());
   };
 
@@ -48,26 +47,28 @@ export function ReceiptPreviewPage() {
       actions={
         <>
           <Button className="action-button" icon={ArrowLeft} label="Edit" onClick={openEditor} variant="soft" />
-          <Button className="action-button" icon={Printer} label="Print" onClick={openPrintSetup} variant="primary" />
+          <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
         </>
       }
       installAvailable={false}
       onInstall={() => undefined}
     >
       <main className="preview-page">
-        <div className="preview-page-canvas">
-          <ReceiptDocument receipt={receipt} totals={totals} />
+        <div aria-label="Receipt preview" className="preview-page-viewer">
+          <div className="preview-page-canvas">
+            <ReceiptDocument receipt={receipt} totals={totals} />
+          </div>
         </div>
       </main>
-
-      {printSetupOpen ? (
-        <PrintSetupDialog
-          onCancel={() => setPrintSetupOpen(false)}
-          onPaperChange={setDraftPaper}
-          onPrint={confirmPrint}
-          paper={draftPaper}
-        />
-      ) : null}
     </AppShell>
   );
+}
+
+function getPaperFromQuery(value: string | undefined): PaperFormat | null {
+  if (!value) {
+    return null;
+  }
+
+  const paper = normalizePaperFormat(value);
+  return paper === value ? paper : null;
 }

@@ -1,24 +1,40 @@
 import { FileText, Printer, X } from "lucide-preact";
+import type { LucideIcon } from "lucide-preact";
 import type { PaperFormat } from "../../types";
 import { paperOptions } from "../../domain/paper";
 import { Button, IconButton } from "../ui/Button";
 import { SegmentedControl } from "../ui/SegmentedControl";
 
 type PrintSetupDialogProps = {
+  confirmIcon?: LucideIcon;
+  confirmLabel?: string;
+  eyebrow?: string;
   onCancel: () => void;
+  onConfirm: () => void;
   onPaperChange: (paper: PaperFormat) => void;
-  onPrint: () => void;
   paper: PaperFormat;
+  title?: string;
 };
 
-export function PrintSetupDialog({ onCancel, onPaperChange, onPrint, paper }: PrintSetupDialogProps) {
+export function PrintSetupDialog({
+  confirmIcon = Printer,
+  confirmLabel = "Print",
+  eyebrow = "Print setup",
+  onCancel,
+  onConfirm,
+  onPaperChange,
+  paper,
+  title = "Paper format",
+}: PrintSetupDialogProps) {
+  const ConfirmIcon = confirmIcon;
+
   return (
     <div aria-modal="true" className="print-setup-backdrop" role="dialog">
       <section className="print-setup-panel">
         <div className="print-setup-header">
           <div>
-            <p className="eyebrow">Print setup</p>
-            <h2>Paper format</h2>
+            <p className="eyebrow">{eyebrow}</p>
+            <h2>{title}</h2>
           </div>
           <IconButton icon={X} onClick={onCancel} title="Close print setup" />
         </div>
@@ -36,7 +52,7 @@ export function PrintSetupDialog({ onCancel, onPaperChange, onPrint, paper }: Pr
 
         <div className="print-setup-actions">
           <Button label="Cancel" onClick={onCancel} />
-          <Button icon={Printer} label="Print" onClick={onPrint} variant="primary" />
+          <Button icon={ConfirmIcon} label={confirmLabel} onClick={onConfirm} variant="primary" />
         </div>
       </section>
     </div>

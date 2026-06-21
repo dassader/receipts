@@ -308,3 +308,11 @@
     min-height: 600px;
   }
 }
+
+.preview-page .receipt {
+  flex: 0 0 auto;
+  width: var(--sheet-preview-width);
+  min-width: var(--sheet-preview-width);
+  min-height: var(--sheet-preview-height);
+  padding: var(--sheet-preview-padding);
+}

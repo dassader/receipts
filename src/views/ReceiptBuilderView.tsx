@@ -7,7 +7,7 @@ import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
-import { appRoutes } from "../routes";
+import { createPreviewRoute } from "../routes";
 import { AppShell } from "../layouts/AppShell";
 import { FieldPalette } from "../components/builder/FieldPalette";
 import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
@@ -22,6 +22,7 @@ export function ReceiptBuilderView() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [printSetupOpen, setPrintSetupOpen] = useState(false);
+  const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
   const [draftPaper, setDraftPaper] = useState<PaperFormat>(receipt.paper);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
@@ -128,8 +129,20 @@ export function ReceiptBuilderView() {
   };
 
   const openPreview = () => {
-    saveReceiptState(receipt);
-    location.route(appRoutes.preview);
+    setDraftPaper(receipt.paper);
+    setPreviewSetupOpen(true);
+    setStatus("Choose paper");
+  };
+
+  const confirmPreview = () => {
+    const nextReceipt = { ...receipt, paper: draftPaper };
+
+    setReceipt(nextReceipt);
+    saveReceiptState(nextReceipt);
+    document.body.dataset.paper = draftPaper;
+    updatePrintPageSize(draftPaper);
+    setPreviewSetupOpen(false);
+    location.route(createPreviewRoute(draftPaper));
   };
 
   return (
@@ -185,7 +198,19 @@ export function ReceiptBuilderView() {
         <PrintSetupDialog
           onCancel={() => setPrintSetupOpen(false)}
           onPaperChange={setDraftPaper}
-          onPrint={confirmPrint}
+          onConfirm={confirmPrint}
+          paper={draftPaper}
+        />
+      ) : null}
+
+      {previewSetupOpen ? (
+        <PrintSetupDialog
+          confirmIcon={Eye}
+          confirmLabel="Preview"
+          eyebrow="Preview"
+          onCancel={() => setPreviewSetupOpen(false)}
+          onConfirm={confirmPreview}
+          onPaperChange={setDraftPaper}
           paper={draftPaper}
         />
       ) : null}

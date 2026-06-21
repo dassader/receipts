@@ -18,10 +18,12 @@
   .app-shell,
   .workspace,
   .preview-page,
+  .preview-page-viewer,
   .preview-panel,
   .preview-canvas,
   .preview-page-canvas {
     display: block;
+    width: auto;
     padding: 0;
     margin: 0;
     box-shadow: none;
