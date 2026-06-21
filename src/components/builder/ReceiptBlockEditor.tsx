@@ -1,5 +1,7 @@
 import {
+  BadgeDollarSign,
   Building2,
+  CalendarDays,
   Calculator,
   CreditCard,
   Globe2,
@@ -8,6 +10,7 @@ import {
   MapPin,
   MessageSquareText,
   Phone,
+  Percent,
   ShoppingCart,
   StickyNote,
   Trash2,
@@ -15,10 +18,10 @@ import {
 } from "lucide-preact";
 import type { LucideIcon } from "lucide-preact";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState, Totals } from "../../types";
-import { getReceiptBlockDefinition } from "../../domain/blocks";
+import { getReceiptBlockDefinition, hasReceiptBlock } from "../../domain/blocks";
 import { formatMoney, formatNumberInput, toNumber } from "../../domain/format";
 import { IconButton } from "../ui/Button";
-import { NumberField, SelectField, TextAreaField, TextField, ToggleField } from "../ui/Field";
+import { NumberField, SelectField, TextAreaField, TextField } from "../ui/Field";
 import { Section } from "../ui/Section";
 
 const paymentMethods = ["Cash", "Credit card", "Debit card", "ACH", "Check", "Zelle", "Venmo", "PayPal", "Other"];
@@ -30,11 +33,17 @@ const blockIcons: Record<ReceiptBlockType, LucideIcon> = {
   businessEmail: Mail,
   businessWebsite: Globe2,
   businessId: Hash,
-  receiptDetails: Hash,
-  customer: User,
+  receiptNumber: Hash,
+  receiptDate: CalendarDays,
+  customerName: User,
+  customerEmail: Mail,
   item: ShoppingCart,
-  totals: Calculator,
-  payment: CreditCard,
+  taxRate: Percent,
+  discount: BadgeDollarSign,
+  amountPaid: CreditCard,
+  totalSummary: Calculator,
+  paymentMethod: CreditCard,
+  cashier: User,
   note: StickyNote,
   footer: MessageSquareText,
 };
@@ -97,15 +106,6 @@ export function ReceiptBlockEditor({
               type="number"
               value={formatNumberInput(item.unitPrice)}
             />
-          </label>
-
-          <label className="tax-check" title="Taxable item">
-            <input
-              checked={item.taxable}
-              onChange={(event) => onUpdateItem(item.id, "taxable", event.currentTarget.checked)}
-              type="checkbox"
-            />
-            <span>Tax</span>
           </label>
 
           <div className="line-total">{formatMoney(item.quantity * item.unitPrice, receipt.currency)}</div>
@@ -199,15 +199,22 @@ function renderBlockFields(
           />
         </div>
       );
-    case "receiptDetails":
+    case "receiptNumber":
       return (
         <div className="field-grid">
           <TextField
+            className="full"
             label="Receipt no."
             onChange={(value) => updateField("receiptNumber", value)}
             value={receipt.receiptNumber}
           />
+        </div>
+      );
+    case "receiptDate":
+      return (
+        <div className="field-grid">
           <TextField
+            className="full"
             label="Issued"
             onChange={(value) => updateField("receiptDate", value)}
             type="date"
@@ -215,11 +222,22 @@ function renderBlockFields(
           />
         </div>
       );
-    case "customer":
+    case "customerName":
       return (
         <div className="field-grid">
-          <TextField label="Customer" onChange={(value) => updateField("customerName", value)} value={receipt.customerName} />
           <TextField
+            className="full"
+            label="Customer"
+            onChange={(value) => updateField("customerName", value)}
+            value={receipt.customerName}
+          />
+        </div>
+      );
+    case "customerEmail":
+      return (
+        <div className="field-grid">
+          <TextField
+            className="full"
             label="Customer email"
             onChange={(value) => updateField("customerEmail", value)}
             type="email"
@@ -227,51 +245,92 @@ function renderBlockFields(
           />
         </div>
       );
-    case "totals":
+    case "taxRate":
       return (
-        <>
-          <div className="field-grid compact">
-            <NumberField label="Tax rate %" onChange={(value) => updateField("taxRate", value)} value={receipt.taxRate} />
-            <NumberField label="Discount" onChange={(value) => updateField("discount", value)} value={receipt.discount} />
-            <ToggleField
-              checked={receipt.paidInFull}
-              label="Paid in full"
-              onChange={(value) => updateField("paidInFull", value)}
-            />
-            <NumberField
-              className={receipt.paidInFull ? "field-disabled" : ""}
-              disabled={receipt.paidInFull}
-              label="Amount paid"
-              onChange={(value) => updateField("amountPaid", value)}
-              value={receipt.paidInFull ? totals.total : receipt.amountPaid}
-            />
+        <div className="field-grid">
+          <NumberField
+            className="full"
+            label="Tax rate %"
+            onChange={(value) => updateField("taxRate", value)}
+            value={receipt.taxRate}
+          />
+        </div>
+      );
+    case "discount":
+      return (
+        <div className="field-grid">
+          <NumberField
+            className="full"
+            label="Discount"
+            onChange={(value) => updateField("discount", value)}
+            value={receipt.discount}
+          />
+        </div>
+      );
+    case "amountPaid":
+      return (
+        <div className="field-grid">
+          <NumberField
+            className="full"
+            label="Amount paid"
+            onChange={(value) => updateField("amountPaid", value)}
+            value={receipt.paidInFull ? totals.total : receipt.amountPaid}
+          />
+        </div>
+      );
+    case "totalSummary":
+      return (
+        <dl className="totals-strip builder-summary-strip">
+          <div>
+            <dt>Subtotal</dt>
+            <dd>{formatMoney(totals.subtotal, receipt.currency)}</dd>
           </div>
-          <dl className="totals-strip">
-            <div>
-              <dt>Subtotal</dt>
-              <dd>{formatMoney(totals.subtotal, receipt.currency)}</dd>
-            </div>
+          {hasReceiptBlock(receipt, "taxRate") && receipt.taxRate > 0 ? (
             <div>
               <dt>Tax</dt>
               <dd>{formatMoney(totals.tax, receipt.currency)}</dd>
             </div>
+          ) : null}
+          {hasReceiptBlock(receipt, "discount") && totals.discount > 0 ? (
             <div>
-              <dt>Total</dt>
-              <dd>{formatMoney(totals.total, receipt.currency)}</dd>
+              <dt>Discount</dt>
+              <dd>{formatMoney(-totals.discount, receipt.currency)}</dd>
             </div>
-          </dl>
-        </>
+          ) : null}
+          <div>
+            <dt>Total</dt>
+            <dd>{formatMoney(totals.total, receipt.currency)}</dd>
+          </div>
+          {hasReceiptBlock(receipt, "amountPaid") ? (
+            <div>
+              <dt>Paid</dt>
+              <dd>{formatMoney(totals.paid, receipt.currency)}</dd>
+            </div>
+          ) : null}
+          {hasReceiptBlock(receipt, "amountPaid") && totals.balance > 0 ? (
+            <div>
+              <dt>Balance</dt>
+              <dd>{formatMoney(totals.balance, receipt.currency)}</dd>
+            </div>
+          ) : null}
+        </dl>
       );
-    case "payment":
+    case "paymentMethod":
       return (
         <div className="field-grid">
           <SelectField
+            className="full"
             label="Payment"
             onChange={(value) => updateField("paymentMethod", value)}
             options={paymentMethods}
             value={receipt.paymentMethod}
           />
-          <TextField label="Cashier" onChange={(value) => updateField("cashier", value)} value={receipt.cashier} />
+        </div>
+      );
+    case "cashier":
+      return (
+        <div className="field-grid">
+          <TextField className="full" label="Cashier" onChange={(value) => updateField("cashier", value)} value={receipt.cashier} />
         </div>
       );
     case "note":

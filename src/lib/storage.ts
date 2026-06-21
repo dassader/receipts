@@ -24,7 +24,6 @@ export function loadReceiptState(): ReceiptState {
             description: item.description || "",
             quantity: normalizeNumber(item.quantity, 1),
             unitPrice: normalizeNumber(item.unitPrice, 0),
-            taxable: item.taxable !== false,
           }))
         : fallback.items;
 

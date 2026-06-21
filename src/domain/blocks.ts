@@ -53,52 +53,94 @@ export const receiptBlockDefinitions: ReceiptBlockDefinition[] = [
     repeatable: false,
   },
   {
-    type: "receiptDetails",
-    label: "Receipt details",
-    description: "Number and issue date",
+    type: "receiptNumber",
+    label: "Receipt no.",
+    description: "Receipt identifier",
     order: 70,
     repeatable: false,
   },
   {
-    type: "customer",
-    label: "Customer",
-    description: "Name and email",
+    type: "receiptDate",
+    label: "Issued",
+    description: "Receipt date",
     order: 80,
+    repeatable: false,
+  },
+  {
+    type: "customerName",
+    label: "Customer",
+    description: "Customer name",
+    order: 90,
+    repeatable: false,
+  },
+  {
+    type: "customerEmail",
+    label: "Customer email",
+    description: "Customer email",
+    order: 100,
     repeatable: false,
   },
   {
     type: "item",
     label: "Item",
     description: "Description, quantity, price",
-    order: 90,
+    order: 110,
     repeatable: true,
   },
   {
-    type: "totals",
-    label: "Totals",
-    description: "Tax, discount, paid amount",
-    order: 100,
+    type: "taxRate",
+    label: "Tax rate",
+    description: "Adds sales tax",
+    order: 120,
     repeatable: false,
   },
   {
-    type: "payment",
+    type: "discount",
+    label: "Discount",
+    description: "Discount amount",
+    order: 130,
+    repeatable: false,
+  },
+  {
+    type: "amountPaid",
+    label: "Amount paid",
+    description: "Paid amount",
+    order: 140,
+    repeatable: false,
+  },
+  {
+    type: "totalSummary",
+    label: "Total summary",
+    description: "Subtotal and total",
+    order: 150,
+    repeatable: false,
+  },
+  {
+    type: "paymentMethod",
     label: "Payment",
-    description: "Method and cashier",
-    order: 110,
+    description: "Payment method",
+    order: 160,
+    repeatable: false,
+  },
+  {
+    type: "cashier",
+    label: "Cashier",
+    description: "Staff name",
+    order: 170,
     repeatable: false,
   },
   {
     type: "note",
     label: "Note",
     description: "Policy or customer note",
-    order: 120,
+    order: 180,
     repeatable: false,
   },
   {
     type: "footer",
     label: "Footer",
     description: "Final receipt line",
-    order: 130,
+    order: 190,
     repeatable: false,
   },
 ];
@@ -139,14 +181,44 @@ export function createDefaultReceiptBlocks(items: LineItem[]) {
     createReceiptBlock("businessPhone"),
     createReceiptBlock("businessEmail"),
     createReceiptBlock("businessWebsite"),
-    createReceiptBlock("receiptDetails"),
-    createReceiptBlock("customer"),
+    createReceiptBlock("receiptNumber"),
+    createReceiptBlock("receiptDate"),
+    createReceiptBlock("customerName"),
+    createReceiptBlock("customerEmail"),
     ...items.map((item) => createReceiptBlock("item", item.id)),
-    createReceiptBlock("totals"),
-    createReceiptBlock("payment"),
+    createReceiptBlock("taxRate"),
+    createReceiptBlock("discount"),
+    createReceiptBlock("amountPaid"),
+    createReceiptBlock("totalSummary"),
+    createReceiptBlock("paymentMethod"),
+    createReceiptBlock("cashier"),
     createReceiptBlock("note"),
     createReceiptBlock("footer"),
   ]);
+}
+
+function getMigratedBlockTypes(rawType: unknown): ReceiptBlockType[] {
+  if (rawType === "businessContact") {
+    return ["businessPhone", "businessEmail", "businessWebsite"];
+  }
+
+  if (rawType === "receiptDetails") {
+    return ["receiptNumber", "receiptDate"];
+  }
+
+  if (rawType === "customer") {
+    return ["customerName", "customerEmail"];
+  }
+
+  if (rawType === "totals") {
+    return ["taxRate", "discount", "amountPaid", "totalSummary"];
+  }
+
+  if (rawType === "payment") {
+    return ["paymentMethod", "cashier"];
+  }
+
+  return isReceiptBlockType(rawType) ? [rawType] : [];
 }
 
 export function normalizeReceiptBlocks(value: unknown, items: LineItem[]) {
@@ -161,12 +233,7 @@ export function normalizeReceiptBlocks(value: unknown, items: LineItem[]) {
       }
 
       const rawType = "type" in maybeBlock ? maybeBlock.type : undefined;
-      const types =
-        rawType === "businessContact"
-          ? (["businessPhone", "businessEmail", "businessWebsite"] as const)
-          : isReceiptBlockType(rawType)
-            ? ([rawType] as const)
-            : [];
+      const types = getMigratedBlockTypes(rawType);
 
       if (types.length === 0) {
         continue;
@@ -221,4 +288,8 @@ export function getOrderedReceiptItems(receipt: ReceiptState) {
   }
 
   return items;
+}
+
+export function hasReceiptBlock(receipt: ReceiptState, type: ReceiptBlockType) {
+  return receipt.blocks.some((block) => block.type === type);
 }

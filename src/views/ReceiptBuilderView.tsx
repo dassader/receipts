@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { Plus, Printer, X } from "lucide-preact";
-import type { BeforeInstallPromptEvent, LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
+import { Eye, Plus, Printer, X } from "lucide-preact";
+import type { BeforeInstallPromptEvent, LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, getReceiptBlockDefinition, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
@@ -9,8 +9,8 @@ import { loadReceiptState, saveReceiptState } from "../lib/storage";
 import { AppShell } from "../layouts/AppShell";
 import { FieldPalette } from "../components/builder/FieldPalette";
 import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
+import { PrintSetupDialog } from "../components/print/PrintSetupDialog";
 import { Button, IconButton } from "../components/ui/Button";
-import { SheetSection } from "../components/forms/SheetSection";
 import { ReceiptPreview } from "../components/receipt/ReceiptPreview";
 
 export function ReceiptBuilderView() {
@@ -18,6 +18,8 @@ export function ReceiptBuilderView() {
   const [status, setStatus] = useState("Saved");
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [printSetupOpen, setPrintSetupOpen] = useState(false);
+  const [draftPaper, setDraftPaper] = useState<PaperFormat>(receipt.paper);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
 
@@ -45,7 +47,9 @@ export function ReceiptBuilderView() {
   }, [receipt.paper]);
 
   const updateField = <K extends keyof ReceiptState>(field: K, value: ReceiptState[K]) => {
-    setReceipt((current) => ({ ...current, [field]: value }));
+    setReceipt((current) =>
+      field === "amountPaid" ? { ...current, amountPaid: value as number, paidInFull: false } : { ...current, [field]: value },
+    );
     setStatus("Saved");
   };
 
@@ -103,15 +107,33 @@ export function ReceiptBuilderView() {
   };
 
   const printReceipt = () => {
-    updatePrintPageSize(receipt.paper);
+    setDraftPaper(receipt.paper);
+    setPrintSetupOpen(true);
+    setStatus("Choose paper");
+  };
+
+  const confirmPrint = () => {
+    const nextReceipt = { ...receipt, paper: draftPaper };
+
+    setReceipt(nextReceipt);
+    saveReceiptState(nextReceipt);
+    document.body.dataset.paper = draftPaper;
+    updatePrintPageSize(draftPaper);
+    setPrintSetupOpen(false);
     setStatus("Ready to print");
-    window.print();
+    requestAnimationFrame(() => window.print());
+  };
+
+  const openPreview = () => {
+    saveReceiptState(receipt);
+    window.location.hash = "#/preview";
   };
 
   return (
     <AppShell
       actions={
         <>
+          <Button className="action-button" icon={Eye} label="Preview" onClick={openPreview} variant="soft" />
           <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
         </>
       }
@@ -136,8 +158,6 @@ export function ReceiptBuilderView() {
 
           {paletteOpen ? <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} /> : null}
 
-          <SheetSection receipt={receipt} updateField={updateField} />
-
           {receipt.blocks.length > 0 ? (
             receipt.blocks.map((block) => (
               <ReceiptBlockEditor
@@ -157,6 +177,15 @@ export function ReceiptBuilderView() {
 
         <ReceiptPreview receipt={receipt} status={status} totals={totals} />
       </main>
+
+      {printSetupOpen ? (
+        <PrintSetupDialog
+          onCancel={() => setPrintSetupOpen(false)}
+          onPaperChange={setDraftPaper}
+          onPrint={confirmPrint}
+          paper={draftPaper}
+        />
+      ) : null}
     </AppShell>
   );
 }
@@ -168,7 +197,6 @@ function createNextReceiptBlocks(receipt: ReceiptState, type: ReceiptBlockType) 
       description: "New item",
       quantity: 1,
       unitPrice: 0,
-      taxable: true,
     };
 
     return {

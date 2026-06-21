@@ -66,8 +66,7 @@
 }
 
 .field span,
-.toggle-field span,
-.tax-check span {
+.toggle-field span {
   color: var(--muted);
   font-size: 0.77rem;
   font-weight: 750;
@@ -259,8 +258,7 @@
   background: #fffdf9;
 }
 
-.toggle-field input,
-.tax-check input {
+.toggle-field input {
   width: 20px;
   height: 20px;
   accent-color: var(--blue);
@@ -283,18 +281,11 @@
 }
 
 .item-block-row {
-  grid-template-columns: minmax(150px, 1fr) 92px 112px 64px 92px;
+  grid-template-columns: minmax(150px, 1fr) 92px 112px 92px;
 }
 
 .compact-field input {
   text-align: right;
-}
-
-.tax-check {
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  padding-bottom: 7px;
 }
 
 .line-total {
@@ -313,6 +304,52 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 14px 0 0;
+}
+
+.builder-summary-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.print-setup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: end center;
+  padding: 18px;
+  background: rgba(31, 41, 55, 0.34);
+}
+
+.print-setup-panel {
+  width: min(460px, 100%);
+  border: 1px solid rgba(222, 215, 204, 0.95);
+  border-radius: var(--radius);
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(31, 41, 55, 0.22);
+  padding: 16px;
+}
+
+.print-setup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.print-setup-header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+}
+
+.print-setup-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .totals-strip div {

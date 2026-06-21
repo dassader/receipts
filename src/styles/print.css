@@ -10,14 +10,17 @@
   .topbar,
   .tool-panel,
   .preview-header,
-  .action-bar {
+  .action-bar,
+  .print-setup-backdrop {
     display: none !important;
   }
 
   .app-shell,
   .workspace,
+  .preview-page,
   .preview-panel,
-  .preview-canvas {
+  .preview-canvas,
+  .preview-page-canvas {
     display: block;
     padding: 0;
     margin: 0;

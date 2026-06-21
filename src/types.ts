@@ -5,7 +5,6 @@ export type LineItem = {
   description: string;
   quantity: number;
   unitPrice: number;
-  taxable: boolean;
 };
 
 export type ReceiptBlockType =
@@ -15,11 +14,17 @@ export type ReceiptBlockType =
   | "businessEmail"
   | "businessWebsite"
   | "businessId"
-  | "receiptDetails"
-  | "customer"
+  | "receiptNumber"
+  | "receiptDate"
+  | "customerName"
+  | "customerEmail"
   | "item"
-  | "totals"
-  | "payment"
+  | "taxRate"
+  | "discount"
+  | "amountPaid"
+  | "totalSummary"
+  | "paymentMethod"
+  | "cashier"
   | "note"
   | "footer";
 

@@ -9,14 +9,12 @@ export function createDefaultReceipt(): ReceiptState {
       description: "Service labor",
       quantity: 1,
       unitPrice: 85,
-      taxable: true,
     },
     {
       id: createId(),
       description: "Parts",
       quantity: 2,
       unitPrice: 12.5,
-      taxable: true,
     },
   ];
 

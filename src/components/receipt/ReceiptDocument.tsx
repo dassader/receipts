@@ -1,5 +1,5 @@
 import type { LineItem, ReceiptBlock, ReceiptState, Totals } from "../../types";
-import { getOrderedReceiptItems } from "../../domain/blocks";
+import { getOrderedReceiptItems, hasReceiptBlock } from "../../domain/blocks";
 import { formatDate, formatMoney, formatNumberInput, formatQuantity } from "../../domain/format";
 
 type ReceiptDocumentProps = {
@@ -47,58 +47,44 @@ function ReceiptBlockView({ block, receipt, totals }: { block: ReceiptBlock; rec
       return <ReceiptTextBlock label="Website" lines={[valueOrPlaceholder(receipt.sellerWebsite, "Website")]} />;
     case "businessId":
       return <ReceiptTextBlock label="Business ID" lines={[valueOrPlaceholder(receipt.sellerTaxId, "Business ID")]} />;
-    case "receiptDetails":
-      return (
-        <section className="receipt-block receipt-meta">
-          <div>
-            <span>Receipt</span>
-            <strong>{valueOrPlaceholder(receipt.receiptNumber, "Receipt no.")}</strong>
-          </div>
-          <div>
-            <span>Date</span>
-            <strong>{formatDate(receipt.receiptDate)}</strong>
-          </div>
-        </section>
-      );
-    case "customer":
-      return (
-        <ReceiptTextBlock
-          label="Bill to"
-          lines={nonEmptyLines([receipt.customerName, receipt.customerEmail], "Customer")}
-          strong
-        />
-      );
-    case "totals":
+    case "receiptNumber":
+      return <ReceiptTextBlock label="Receipt" lines={[valueOrPlaceholder(receipt.receiptNumber, "Receipt no.")]} strong />;
+    case "receiptDate":
+      return <ReceiptTextBlock label="Date" lines={[formatDate(receipt.receiptDate)]} strong />;
+    case "customerName":
+      return <ReceiptTextBlock label="Bill to" lines={[valueOrPlaceholder(receipt.customerName, "Customer")]} strong />;
+    case "customerEmail":
+      return <ReceiptTextBlock label="Customer email" lines={[valueOrPlaceholder(receipt.customerEmail, "Customer email")]} />;
+    case "taxRate":
+    case "discount":
+    case "amountPaid":
+      return null;
+    case "totalSummary":
       return (
         <section className="receipt-block receipt-totals">
           <ReceiptTotal label="Subtotal" value={formatMoney(totals.subtotal, receipt.currency)} />
-          <ReceiptTotal label={`Tax ${formatNumberInput(receipt.taxRate)}%`} value={formatMoney(totals.tax, receipt.currency)} />
-          {receipt.discount > 0 ? (
+          {hasReceiptBlock(receipt, "taxRate") && receipt.taxRate > 0 ? (
+            <ReceiptTotal label={`Tax ${formatNumberInput(receipt.taxRate)}%`} value={formatMoney(totals.tax, receipt.currency)} />
+          ) : null}
+          {hasReceiptBlock(receipt, "discount") && totals.discount > 0 ? (
             <ReceiptTotal label="Discount" value={formatMoney(-totals.discount, receipt.currency)} />
           ) : null}
           <div className="grand-total">
             <span>Total</span>
             <strong>{formatMoney(totals.total, receipt.currency)}</strong>
           </div>
-          <ReceiptTotal label="Paid" value={formatMoney(totals.paid, receipt.currency)} />
-          {totals.balance > 0 ? (
+          {hasReceiptBlock(receipt, "amountPaid") ? (
+            <ReceiptTotal label="Paid" value={formatMoney(totals.paid, receipt.currency)} />
+          ) : null}
+          {hasReceiptBlock(receipt, "amountPaid") && totals.balance > 0 ? (
             <ReceiptTotal label="Balance due" value={formatMoney(totals.balance, receipt.currency)} />
           ) : null}
         </section>
       );
-    case "payment":
-      return (
-        <section className="receipt-block receipt-payment">
-          <div>
-            <span>Payment</span>
-            <strong>{valueOrPlaceholder(receipt.paymentMethod, "Payment method")}</strong>
-          </div>
-          <div>
-            <span>Cashier</span>
-            <strong>{valueOrPlaceholder(receipt.cashier, "Cashier")}</strong>
-          </div>
-        </section>
-      );
+    case "paymentMethod":
+      return <ReceiptTextBlock label="Payment" lines={[valueOrPlaceholder(receipt.paymentMethod, "Payment method")]} strong />;
+    case "cashier":
+      return <ReceiptTextBlock label="Cashier" lines={[valueOrPlaceholder(receipt.cashier, "Cashier")]} strong />;
     case "note":
       return <p className="receipt-block receipt-note">{valueOrPlaceholder(receipt.note, "Receipt note")}</p>;
     case "footer":
@@ -126,7 +112,6 @@ function ReceiptItemsTable({ currency, items }: { currency: string; items: LineI
           <tr key={item.id}>
             <td>
               {valueOrPlaceholder(item.description, "Item")}
-              {item.taxable ? <small>Taxable</small> : null}
             </td>
             <td>{formatQuantity(item.quantity)}</td>
             <td>{formatMoney(item.unitPrice, currency)}</td>
@@ -165,9 +150,4 @@ function ReceiptTotal({ label, value }: { label: string; value: string }) {
 
 function valueOrPlaceholder(value: string, placeholder: string) {
   return value.trim() || placeholder;
-}
-
-function nonEmptyLines(lines: string[], placeholder: string) {
-  const cleanLines = lines.map((line) => line.trim()).filter(Boolean);
-  return cleanLines.length > 0 ? cleanLines : [placeholder];
 }
