@@ -6,6 +6,7 @@ import { createReceiptBlock, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
+import { routeWithFade } from "../lib/navigation";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
 import { createPreviewRoute } from "../routes";
 import { AppShell } from "../layouts/AppShell";
@@ -119,7 +120,7 @@ export function ReceiptBuilderView() {
     document.body.dataset.paper = paper;
     updatePrintPageSize(paper);
     setPreviewSetupOpen(false);
-    location.route(createPreviewRoute(paper));
+    requestAnimationFrame(() => routeWithFade(location, createPreviewRoute(paper)));
   };
 
   return (

@@ -4,6 +4,7 @@ import { useLocation } from "preact-iso";
 import type { PaperFormat } from "../types";
 import { getTotals } from "../domain/totals";
 import { normalizePaperFormat, updatePrintPageSize } from "../domain/paper";
+import { routeWithFade } from "../lib/navigation";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
 import { appRoutes } from "../routes";
 import { AppShell } from "../layouts/AppShell";
@@ -32,7 +33,7 @@ export function ReceiptPreviewPage() {
   }
 
   const openEditor = () => {
-    location.route(appRoutes.home);
+    routeWithFade(location, appRoutes.home);
   };
 
   const printReceipt = () => {

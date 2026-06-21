@@ -4,6 +4,10 @@
   padding-bottom: 96px;
 }
 
+.route-fade-fallback .app-shell {
+  animation: route-fade-in 180ms ease-out both;
+}
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -237,6 +241,36 @@
   }
 }
 
+@keyframes route-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes route-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@supports (view-transition-name: root) {
+  ::view-transition-old(root) {
+    animation: route-fade-out 170ms ease-out both;
+  }
+
+  ::view-transition-new(root) {
+    animation: route-fade-in 190ms ease-out both;
+  }
+}
+
 @keyframes tray-exit {
   from {
     opacity: 1;
@@ -246,6 +280,14 @@
   to {
     opacity: 0;
     transform: translate(-50%, calc(100% + 24px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fade-fallback .app-shell,
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }
 
