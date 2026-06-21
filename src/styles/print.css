@@ -9,7 +9,8 @@
 
   .tool-panel,
   .action-bar,
-  .print-setup-backdrop {
+  .print-setup-backdrop,
+  .receipt-measure {
     display: none !important;
   }
 
@@ -17,7 +18,8 @@
   .workspace,
   .preview-page,
   .preview-page-viewer,
-  .preview-page-canvas {
+  .preview-page-canvas,
+  .receipt-pages {
     display: block;
     width: auto;
     padding: 0;
@@ -35,9 +37,19 @@
     box-shadow: none;
     margin: 0 auto;
     width: 100%;
-    height: auto;
-    min-height: 100vh;
-    overflow: visible;
     padding: var(--sheet-print-padding);
+  }
+
+  .receipt-page {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .receipt-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
   }
 }

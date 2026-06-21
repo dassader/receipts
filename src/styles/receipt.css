@@ -10,6 +10,14 @@
   padding: var(--sheet-preview-padding);
 }
 
+.receipt-pages {
+  position: relative;
+  display: grid;
+  gap: 24px;
+  width: max-content;
+  max-width: none;
+}
+
 .receipt.letter {
   --sheet-preview-width: 8.5in;
   --sheet-preview-height: 11in;
@@ -102,11 +110,15 @@
   font-weight: 700;
 }
 
-.receipt-table {
+.receipt-table,
+.receipt-items-block {
   width: 100%;
-  border-collapse: collapse;
   margin: 14px 0 10px;
   font-size: 0.83rem;
+}
+
+.receipt-table {
+  border-collapse: collapse;
 }
 
 .receipt-table th {
@@ -138,6 +150,56 @@
 .receipt-table small {
   display: block;
   margin-top: 3px;
+}
+
+.receipt-items-block {
+  display: grid;
+  gap: 0;
+}
+
+.receipt-items-heading,
+.receipt-items-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px 82px 82px;
+  gap: 10px;
+  align-items: start;
+}
+
+.receipt-items-heading {
+  padding: 0 0 7px;
+  border-bottom: 1px solid #d4d4d8;
+}
+
+.receipt-items-heading span {
+  color: #52525b;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.receipt-items-heading span:first-child,
+.receipt-items-row strong {
+  text-align: left;
+}
+
+.receipt-items-row {
+  padding: 9px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.receipt-items-row:last-child {
+  border-bottom: 0;
+}
+
+.receipt-items-row strong,
+.receipt-items-row span {
+  overflow-wrap: anywhere;
+  font-size: 0.83rem;
+}
+
+.receipt-items-row span {
+  text-align: right;
 }
 
 .receipt-totals {
@@ -246,7 +308,15 @@
   border-bottom: 1px dashed #a8a29e;
 }
 
+.receipt-items-block.receipt-block {
+  border-bottom: 1px dashed #a8a29e;
+}
+
 .receipt-table.receipt-block:last-child {
+  border-bottom: 0;
+}
+
+.receipt-items-block.receipt-block:last-child {
   border-bottom: 0;
 }
 
@@ -286,13 +356,24 @@
   font-size: 0.98rem;
 }
 
-.preview-page .receipt {
+.preview-page .receipt-pages {
   flex: 0 0 auto;
+}
+
+.preview-page .receipt-page,
+.receipt-measure {
   width: var(--sheet-preview-width);
   min-width: var(--sheet-preview-width);
   height: var(--sheet-preview-height);
   min-height: var(--sheet-preview-height);
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   padding: var(--sheet-preview-padding);
+}
+
+.receipt-measure {
+  position: absolute;
+  top: 0;
+  left: -100000px;
+  visibility: hidden;
+  pointer-events: none;
 }

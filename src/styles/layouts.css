@@ -26,29 +26,6 @@
   overflow: hidden;
 }
 
-.builder-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--line);
-  background: #ffffff;
-}
-
-.builder-toolbar h2 {
-  margin: 0;
-  color: var(--ink);
-  font-size: 1.05rem;
-  letter-spacing: 0;
-}
-
-.builder-add-button {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-}
-
 .form-section {
   padding: 18px;
   border-bottom: 1px solid var(--line);
@@ -187,10 +164,6 @@
 @media (max-width: 430px) {
   .form-section {
     padding: 15px;
-  }
-
-  .builder-toolbar {
-    padding: 14px;
   }
 
   .item-row {

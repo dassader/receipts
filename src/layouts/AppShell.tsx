@@ -10,7 +10,7 @@ export function AppShell({ actions, children }: AppShellProps) {
     <div className="app-shell">
       {children}
 
-      <nav aria-label="Print action" className="action-bar">
+      <nav aria-label="Receipt actions" className="action-bar">
         {actions}
       </nav>
     </div>

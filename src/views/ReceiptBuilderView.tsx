@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { Eye, Plus, Printer, X } from "lucide-preact";
+import { Eye, Plus, X } from "lucide-preact";
 import { useLocation } from "preact-iso";
-import type { LineItem, PaperFormat, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
+import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, sortReceiptBlocks } from "../domain/blocks";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
@@ -11,16 +11,14 @@ import { createPreviewRoute } from "../routes";
 import { AppShell } from "../layouts/AppShell";
 import { FieldPalette } from "../components/builder/FieldPalette";
 import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
-import { PrintSetupDialog } from "../components/print/PrintSetupDialog";
-import { Button, IconButton } from "../components/ui/Button";
+import { PaperPickerDialog } from "../components/print/PaperPickerDialog";
+import { Button } from "../components/ui/Button";
 
 export function ReceiptBuilderView() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [printSetupOpen, setPrintSetupOpen] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
-  const [draftPaper, setDraftPaper] = useState<PaperFormat>(receipt.paper);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
 
@@ -84,63 +82,38 @@ export function ReceiptBuilderView() {
     }));
   };
 
-  const printReceipt = () => {
-    setDraftPaper(receipt.paper);
-    setPrintSetupOpen(true);
-  };
-
-  const confirmPrint = () => {
-    const nextReceipt = { ...receipt, paper: draftPaper };
-
-    setReceipt(nextReceipt);
-    saveReceiptState(nextReceipt);
-    document.body.dataset.paper = draftPaper;
-    updatePrintPageSize(draftPaper);
-    setPrintSetupOpen(false);
-    requestAnimationFrame(() => window.print());
-  };
-
   const openPreview = () => {
-    setDraftPaper(receipt.paper);
     setPreviewSetupOpen(true);
   };
 
-  const confirmPreview = () => {
-    const nextReceipt = { ...receipt, paper: draftPaper };
+  const openPreviewWithPaper = (paper: ReceiptState["paper"]) => {
+    const nextReceipt = { ...receipt, paper };
 
     setReceipt(nextReceipt);
     saveReceiptState(nextReceipt);
-    document.body.dataset.paper = draftPaper;
-    updatePrintPageSize(draftPaper);
+    document.body.dataset.paper = paper;
+    updatePrintPageSize(paper);
     setPreviewSetupOpen(false);
-    location.route(createPreviewRoute(draftPaper));
+    location.route(createPreviewRoute(paper));
   };
 
   return (
     <AppShell
       actions={
         <>
-          <Button className="action-button" icon={Eye} label="Preview" onClick={openPreview} variant="soft" />
-          <Button className="action-button" icon={Printer} label="Print" onClick={printReceipt} variant="primary" />
+          <Button
+            className="action-button"
+            icon={paletteOpen ? X : Plus}
+            label="Fields"
+            onClick={() => setPaletteOpen((current) => !current)}
+            variant="soft"
+          />
+          <Button className="action-button" icon={Eye} label="Preview" onClick={openPreview} variant="primary" />
         </>
       }
     >
       <main className="workspace">
         <form autoComplete="on" className="tool-panel builder-panel">
-          <div className="builder-toolbar">
-            <div>
-              <p className="eyebrow">Constructor</p>
-              <h2>Receipt fields</h2>
-            </div>
-            <IconButton
-              className="builder-add-button"
-              icon={paletteOpen ? X : Plus}
-              onClick={() => setPaletteOpen((current) => !current)}
-              title={paletteOpen ? "Close fields" : "Add field"}
-              variant="primary"
-            />
-          </div>
-
           {paletteOpen ? <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} /> : null}
 
           {receipt.blocks.length > 0 ? (
@@ -161,24 +134,11 @@ export function ReceiptBuilderView() {
         </form>
       </main>
 
-      {printSetupOpen ? (
-        <PrintSetupDialog
-          onCancel={() => setPrintSetupOpen(false)}
-          onPaperChange={setDraftPaper}
-          onConfirm={confirmPrint}
-          paper={draftPaper}
-        />
-      ) : null}
-
       {previewSetupOpen ? (
-        <PrintSetupDialog
-          confirmIcon={Eye}
-          confirmLabel="Preview"
-          eyebrow="Preview"
+        <PaperPickerDialog
           onCancel={() => setPreviewSetupOpen(false)}
-          onConfirm={confirmPreview}
-          onPaperChange={setDraftPaper}
-          paper={draftPaper}
+          onSelect={openPreviewWithPaper}
+          paper={receipt.paper}
         />
       ) : null}
     </AppShell>
