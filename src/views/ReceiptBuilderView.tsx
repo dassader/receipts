@@ -18,6 +18,7 @@ export function ReceiptBuilderView() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteVisible, setPaletteVisible] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
@@ -54,7 +55,7 @@ export function ReceiptBuilderView() {
       ...createNextReceiptBlocks(current, type),
     }));
 
-    setPaletteOpen(false);
+    closePalette();
   };
 
   const removeBlock = (block: ReceiptBlock) => {
@@ -86,6 +87,30 @@ export function ReceiptBuilderView() {
     setPreviewSetupOpen(true);
   };
 
+  const openPalette = () => {
+    setPaletteVisible(true);
+    setPaletteOpen(true);
+  };
+
+  const closePalette = () => {
+    setPaletteOpen(false);
+  };
+
+  const togglePalette = () => {
+    if (paletteOpen) {
+      closePalette();
+      return;
+    }
+
+    openPalette();
+  };
+
+  const finishPaletteClose = (animationName: string) => {
+    if (!paletteOpen && animationName === "tray-exit") {
+      setPaletteVisible(false);
+    }
+  };
+
   const openPreviewWithPaper = (paper: ReceiptState["paper"]) => {
     const nextReceipt = { ...receipt, paper };
 
@@ -105,7 +130,7 @@ export function ReceiptBuilderView() {
             className={`action-button fields-action ${paletteOpen ? "is-open" : ""}`}
             icon={Plus}
             label="Fields"
-            onClick={() => setPaletteOpen((current) => !current)}
+            onClick={togglePalette}
             title={paletteOpen ? "Close fields" : "Open fields"}
             variant="soft"
           />
@@ -133,8 +158,12 @@ export function ReceiptBuilderView() {
         </form>
       </main>
 
-      {paletteOpen ? (
-        <aside aria-label="Field choices" className="field-picker-tray">
+      {paletteVisible ? (
+        <aside
+          aria-label="Field choices"
+          className={`field-picker-tray ${paletteOpen ? "is-open" : "is-closing"}`}
+          onAnimationEnd={(event) => finishPaletteClose(event.animationName)}
+        >
           <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} />
         </aside>
       ) : null}
