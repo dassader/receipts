@@ -313,6 +313,9 @@
   flex: 0 0 auto;
   width: var(--sheet-preview-width);
   min-width: var(--sheet-preview-width);
+  height: var(--sheet-preview-height);
   min-height: var(--sheet-preview-height);
+  overflow: auto;
+  overscroll-behavior: contain;
   padding: var(--sheet-preview-padding);
 }
