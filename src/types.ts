@@ -11,7 +11,9 @@ export type LineItem = {
 export type ReceiptBlockType =
   | "businessName"
   | "businessAddress"
-  | "businessContact"
+  | "businessPhone"
+  | "businessEmail"
+  | "businessWebsite"
   | "businessId"
   | "receiptDetails"
   | "customer"

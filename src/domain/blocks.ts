@@ -25,66 +25,80 @@ export const receiptBlockDefinitions: ReceiptBlockDefinition[] = [
     repeatable: false,
   },
   {
-    type: "businessContact",
-    label: "Business contact",
-    description: "Phone, email, website",
+    type: "businessPhone",
+    label: "Phone",
+    description: "Business phone",
     order: 30,
+    repeatable: false,
+  },
+  {
+    type: "businessEmail",
+    label: "Email",
+    description: "Business email",
+    order: 40,
+    repeatable: false,
+  },
+  {
+    type: "businessWebsite",
+    label: "Website",
+    description: "Business website",
+    order: 50,
     repeatable: false,
   },
   {
     type: "businessId",
     label: "Business ID",
     description: "Optional tax or license ID",
-    order: 40,
+    order: 60,
     repeatable: false,
   },
   {
     type: "receiptDetails",
     label: "Receipt details",
     description: "Number and issue date",
-    order: 50,
+    order: 70,
     repeatable: false,
   },
   {
     type: "customer",
     label: "Customer",
     description: "Name and email",
-    order: 60,
+    order: 80,
     repeatable: false,
   },
   {
     type: "item",
     label: "Item",
     description: "Description, quantity, price",
-    order: 70,
+    order: 90,
     repeatable: true,
   },
   {
     type: "totals",
     label: "Totals",
     description: "Tax, discount, paid amount",
-    order: 80,
+    order: 100,
     repeatable: false,
   },
   {
     type: "payment",
     label: "Payment",
     description: "Method and cashier",
-    order: 90,
+    order: 110,
     repeatable: false,
   },
   {
     type: "note",
     label: "Note",
     description: "Policy or customer note",
-    order: 100,
+    order: 120,
     repeatable: false,
   },
   {
     type: "footer",
     label: "Footer",
     description: "Final receipt line",
-    order: 110,
+    order: 130,
     repeatable: false,
   },
 ];
@@ -122,7 +136,9 @@ export function createDefaultReceiptBlocks(items: LineItem[]) {
   return sortReceiptBlocks([
     createReceiptBlock("businessName"),
     createReceiptBlock("businessAddress"),
-    createReceiptBlock("businessContact"),
+    createReceiptBlock("businessPhone"),
+    createReceiptBlock("businessEmail"),
+    createReceiptBlock("businessWebsite"),
     createReceiptBlock("receiptDetails"),
     createReceiptBlock("customer"),
     ...items.map((item) => createReceiptBlock("item", item.id)),
@@ -144,32 +160,44 @@ export function normalizeReceiptBlocks(value: unknown, items: LineItem[]) {
         continue;
       }
 
-      const type = "type" in maybeBlock ? maybeBlock.type : undefined;
+      const rawType = "type" in maybeBlock ? maybeBlock.type : undefined;
+      const types =
+        rawType === "businessContact"
+          ? (["businessPhone", "businessEmail", "businessWebsite"] as const)
+          : isReceiptBlockType(rawType)
+            ? ([rawType] as const)
+            : [];
 
-      if (!isReceiptBlockType(type)) {
+      if (types.length === 0) {
         continue;
       }
 
-      const definition = getReceiptBlockDefinition(type);
       const itemId = "itemId" in maybeBlock && typeof maybeBlock.itemId === "string" ? maybeBlock.itemId : undefined;
 
-      if (!definition.repeatable && seenSingletons.has(type)) {
-        continue;
-      }
+      for (const type of types) {
+        const definition = getReceiptBlockDefinition(type);
 
-      if (type === "item" && (!itemId || !itemIds.has(itemId))) {
-        continue;
-      }
+        if (!definition.repeatable && seenSingletons.has(type)) {
+          continue;
+        }
 
-      if (!definition.repeatable) {
-        seenSingletons.add(type);
-      }
+        if (type === "item" && (!itemId || !itemIds.has(itemId))) {
+          continue;
+        }
 
-      blocks.push({
-        id: "id" in maybeBlock && typeof maybeBlock.id === "string" ? maybeBlock.id : createId(),
-        itemId,
-        type,
-      });
+        if (!definition.repeatable) {
+          seenSingletons.add(type);
+        }
+
+        blocks.push({
+          id:
+            types.length === 1 && "id" in maybeBlock && typeof maybeBlock.id === "string"
+              ? maybeBlock.id
+              : createId(),
+          itemId,
+          type,
+        });
+      }
     }
   }
 

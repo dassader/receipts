@@ -2,7 +2,9 @@ import {
   Building2,
   Calculator,
   CreditCard,
+  Globe2,
   Hash,
+  Mail,
   MapPin,
   MessageSquareText,
   Phone,
@@ -24,7 +26,9 @@ const paymentMethods = ["Cash", "Credit card", "Debit card", "ACH", "Check", "Ze
 const blockIcons: Record<ReceiptBlockType, LucideIcon> = {
   businessName: Building2,
   businessAddress: MapPin,
-  businessContact: Phone,
+  businessPhone: Phone,
+  businessEmail: Mail,
+  businessWebsite: Globe2,
   businessId: Hash,
   receiptDetails: Hash,
   customer: User,
@@ -147,23 +151,41 @@ function renderBlockFields(
           />
         </div>
       );
-    case "businessContact":
+    case "businessPhone":
       return (
         <div className="field-grid">
           <TextField
+            className="full"
             inputMode="tel"
             label="Phone"
             onChange={(value) => updateField("sellerPhone", value)}
             type="tel"
             value={receipt.sellerPhone}
           />
+        </div>
+      );
+    case "businessEmail":
+      return (
+        <div className="field-grid">
           <TextField
+            className="full"
             label="Email"
             onChange={(value) => updateField("sellerEmail", value)}
             type="email"
             value={receipt.sellerEmail}
           />
-          <TextField label="Website" onChange={(value) => updateField("sellerWebsite", value)} type="url" value={receipt.sellerWebsite} />
+        </div>
+      );
+    case "businessWebsite":
+      return (
+        <div className="field-grid">
+          <TextField
+            className="full"
+            label="Website"
+            onChange={(value) => updateField("sellerWebsite", value)}
+            type="url"
+            value={receipt.sellerWebsite}
+          />
         </div>
       );
     case "businessId":

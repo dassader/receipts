@@ -39,13 +39,12 @@ function ReceiptBlockView({ block, receipt, totals }: { block: ReceiptBlock; rec
       );
     case "businessAddress":
       return <ReceiptTextBlock label="Address" lines={[valueOrPlaceholder(receipt.sellerAddress, "Business address")]} />;
-    case "businessContact":
-      return (
-        <ReceiptTextBlock
-          label="Contact"
-          lines={nonEmptyLines([receipt.sellerPhone, receipt.sellerEmail, receipt.sellerWebsite], "Phone / email / website")}
-        />
-      );
+    case "businessPhone":
+      return <ReceiptTextBlock label="Phone" lines={[valueOrPlaceholder(receipt.sellerPhone, "Phone")]} />;
+    case "businessEmail":
+      return <ReceiptTextBlock label="Email" lines={[valueOrPlaceholder(receipt.sellerEmail, "Email")]} />;
+    case "businessWebsite":
+      return <ReceiptTextBlock label="Website" lines={[valueOrPlaceholder(receipt.sellerWebsite, "Website")]} />;
     case "businessId":
       return <ReceiptTextBlock label="Business ID" lines={[valueOrPlaceholder(receipt.sellerTaxId, "Business ID")]} />;
     case "receiptDetails":
