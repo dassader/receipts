@@ -143,7 +143,6 @@ export function ReceiptBuilderView() {
         <PaperPickerDialog
           onCancel={() => setPreviewSetupOpen(false)}
           onSelect={openPreviewWithPaper}
-          paper={receipt.paper}
         />
       ) : null}
     </AppShell>

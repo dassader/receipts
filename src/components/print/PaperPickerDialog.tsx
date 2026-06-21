@@ -6,10 +6,9 @@ import { Button } from "../ui/Button";
 type PaperPickerDialogProps = {
   onCancel: () => void;
   onSelect: (paper: PaperFormat) => void;
-  paper: PaperFormat;
 };
 
-export function PaperPickerDialog({ onCancel, onSelect, paper }: PaperPickerDialogProps) {
+export function PaperPickerDialog({ onCancel, onSelect }: PaperPickerDialogProps) {
   return (
     <div aria-modal="true" className="print-setup-backdrop" role="dialog">
       <section className="print-setup-panel">
@@ -21,7 +20,7 @@ export function PaperPickerDialog({ onCancel, onSelect, paper }: PaperPickerDial
         <div className="paper-card-grid">
           {paperOptions.map((option) => (
             <button
-              className={`paper-card ${option.format === paper ? "selected" : ""}`}
+              className="paper-card"
               key={option.format}
               onClick={() => onSelect(option.format)}
               type="button"
