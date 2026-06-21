@@ -30,16 +30,11 @@
   }
 
   .receipt {
+    box-sizing: border-box;
     box-shadow: none;
     margin: 0 auto;
-  }
-
-  .receipt.thermal {
-    width: 80mm;
-  }
-
-  .receipt.letter {
-    width: 100%;
-    min-height: auto;
+    width: var(--sheet-print-width);
+    min-height: var(--sheet-print-height);
+    padding: var(--sheet-print-padding);
   }
 }

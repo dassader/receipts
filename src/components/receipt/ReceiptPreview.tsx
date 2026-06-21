@@ -1,5 +1,6 @@
 import type { Ref } from "preact";
 import type { ReceiptState, Totals } from "../../types";
+import { getPaperDefinition } from "../../domain/paper";
 import { ReceiptDocument } from "./ReceiptDocument";
 
 type ReceiptPreviewProps = {
@@ -10,12 +11,14 @@ type ReceiptPreviewProps = {
 };
 
 export function ReceiptPreview({ receipt, receiptRef, status, totals }: ReceiptPreviewProps) {
+  const paper = getPaperDefinition(receipt.paper);
+
   return (
     <aside aria-label="Receipt preview" className="preview-panel">
       <div className="preview-header">
         <div>
           <p className="eyebrow">Live preview</p>
-          <h2>{receipt.paper === "thermal" ? "80mm receipt" : "Letter receipt"}</h2>
+          <h2>{paper.label} sheet</h2>
         </div>
         <div className="status-pill">{status}</div>
       </div>

@@ -17,7 +17,7 @@ export function createDefaultReceipt(): ReceiptState {
     receiptDate: new Date().toISOString().slice(0, 10),
     paymentMethod: "Credit card",
     cashier: "Front desk",
-    paper: "thermal",
+    paper: "letter",
     currency: "USD",
     taxRate: 8.875,
     discount: 0,

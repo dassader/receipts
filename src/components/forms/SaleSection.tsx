@@ -1,5 +1,6 @@
-import { BadgeDollarSign, FileText, Receipt } from "lucide-preact";
+import { BadgeDollarSign, FileText } from "lucide-preact";
 import type { PaperFormat, ReceiptState } from "../../types";
+import { paperOptions } from "../../domain/paper";
 import { SelectField, TextField } from "../ui/Field";
 import { Section } from "../ui/Section";
 import { SegmentedControl } from "../ui/SegmentedControl";
@@ -49,10 +50,11 @@ export function SaleSection({ receipt, updateField }: SaleSectionProps) {
       <SegmentedControl<PaperFormat>
         ariaLabel="Paper format"
         onChange={(value) => updateField("paper", value)}
-        options={[
-          { icon: Receipt, label: "80mm", value: "thermal" },
-          { icon: FileText, label: "Letter", value: "letter" },
-        ]}
+        options={paperOptions.map((option) => ({
+          icon: FileText,
+          label: option.shortLabel,
+          value: option.format,
+        }))}
         value={receipt.paper}
       />
     </Section>

@@ -2,20 +2,48 @@
   background: #ffffff;
   color: #18181b;
   box-shadow: 0 18px 48px rgba(31, 41, 55, 0.18);
-}
-
-.receipt.thermal {
-  width: min(100%, 320px);
-  padding: 20px 18px;
-  font-family: "Courier New", Courier, monospace;
+  box-sizing: border-box;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  width: min(100%, var(--sheet-preview-width));
+  min-height: var(--sheet-preview-height);
+  padding: var(--sheet-preview-padding);
 }
 
 .receipt.letter {
-  width: min(100%, 720px);
-  min-height: 920px;
-  padding: 46px;
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sheet-preview-width: 720px;
+  --sheet-preview-height: 932px;
+  --sheet-preview-padding: 46px;
+  --sheet-print-width: 216mm;
+  --sheet-print-height: 279mm;
+  --sheet-print-padding: 14mm;
+}
+
+.receipt.legal {
+  --sheet-preview-width: 720px;
+  --sheet-preview-height: 1186px;
+  --sheet-preview-padding: 46px;
+  --sheet-print-width: 216mm;
+  --sheet-print-height: 356mm;
+  --sheet-print-padding: 14mm;
+}
+
+.receipt.a4 {
+  --sheet-preview-width: 706px;
+  --sheet-preview-height: 998px;
+  --sheet-preview-padding: 46px;
+  --sheet-print-width: 210mm;
+  --sheet-print-height: 297mm;
+  --sheet-print-padding: 14mm;
+}
+
+.receipt.a5 {
+  --sheet-preview-width: 500px;
+  --sheet-preview-height: 706px;
+  --sheet-preview-padding: 34px;
+  --sheet-print-width: 148mm;
+  --sheet-print-height: 210mm;
+  --sheet-print-padding: 10mm;
 }
 
 .receipt-business {
@@ -162,37 +190,56 @@
   font-size: 0.82rem;
 }
 
-.letter .receipt-business {
+.letter .receipt-business,
+.legal .receipt-business,
+.a4 .receipt-business,
+.a5 .receipt-business {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 24px;
   text-align: left;
 }
 
-.letter .receipt-business h2 {
+.letter .receipt-business h2,
+.legal .receipt-business h2,
+.a4 .receipt-business h2 {
   font-size: 2rem;
 }
 
+.a5 .receipt-business h2 {
+  font-size: 1.55rem;
+}
+
 .letter .receipt-table,
-.letter .receipt strong {
+.letter .receipt strong,
+.legal .receipt-table,
+.legal .receipt strong,
+.a4 .receipt-table,
+.a4 .receipt strong,
+.a5 .receipt-table,
+.a5 .receipt strong {
   font-size: 0.98rem;
 }
 
 @media (max-width: 760px) {
-  .receipt.thermal {
-    width: 302px;
-    padding: 18px 14px;
+  .receipt {
+    width: 100%;
+    padding: 28px 20px;
   }
 
   .receipt.letter {
-    width: 100%;
     min-height: 760px;
-    padding: 28px 20px;
   }
-}
 
-@media (max-width: 430px) {
-  .receipt.thermal {
-    width: 286px;
+  .receipt.legal {
+    min-height: 980px;
+  }
+
+  .receipt.a4 {
+    min-height: 820px;
+  }
+
+  .receipt.a5 {
+    min-height: 600px;
   }
 }

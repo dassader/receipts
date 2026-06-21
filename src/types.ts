@@ -1,4 +1,4 @@
-export type PaperFormat = "thermal" | "letter";
+export type PaperFormat = "letter" | "legal" | "a4" | "a5";
 
 export type LineItem = {
   id: string;

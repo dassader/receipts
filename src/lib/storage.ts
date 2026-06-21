@@ -2,6 +2,7 @@ import type { ReceiptState } from "../types";
 import { createDefaultReceipt } from "../domain/defaultReceipt";
 import { createId } from "../domain/ids";
 import { normalizeNumber } from "../domain/format";
+import { normalizePaperFormat } from "../domain/paper";
 
 const STORAGE_KEY = "receipt-studio-state-v1";
 
@@ -19,7 +20,7 @@ export function loadReceiptState(): ReceiptState {
     return {
       ...fallback,
       ...parsed,
-      paper: parsed.paper === "letter" ? "letter" : "thermal",
+      paper: normalizePaperFormat(parsed.paper),
       items:
         Array.isArray(parsed.items) && parsed.items.length > 0
           ? parsed.items.map((item) => ({

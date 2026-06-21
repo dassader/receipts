@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { FileDown, ImageDown, Printer } from "lucide-preact";
+import { FileDown, Printer } from "lucide-preact";
 import type { BeforeInstallPromptEvent, LineItem, ReceiptState } from "../types";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
+import { updatePrintPageSize } from "../domain/paper";
 import { fileBaseName } from "../lib/pwa";
 import { loadReceiptState, saveReceiptState } from "../lib/storage";
-import { exportReceiptPdf, exportReceiptPng } from "../lib/exporters";
+import { exportReceiptPdf } from "../lib/exporters";
 import { AppShell } from "../layouts/AppShell";
 import { Button } from "../components/ui/Button";
 import { BusinessSection } from "../components/forms/BusinessSection";
@@ -25,6 +26,7 @@ export function ReceiptBuilderView() {
   useEffect(() => {
     saveReceiptState(receipt);
     document.body.dataset.paper = receipt.paper;
+    updatePrintPageSize(receipt.paper);
   }, [receipt]);
 
   useEffect(() => {
@@ -104,27 +106,12 @@ export function ReceiptBuilderView() {
     setStatus("PDF ready");
   };
 
-  const exportPng = async () => {
-    if (!receiptRef.current) {
-      return;
-    }
-
-    setStatus("Rendering PNG");
-    await exportReceiptPng({
-      fileBaseName: fileBaseName(receipt.receiptNumber),
-      paper: receipt.paper,
-      target: receiptRef.current,
-    });
-    setStatus("PNG ready");
-  };
-
   return (
     <AppShell
       actions={
         <>
-          <Button className="action-button" icon={FileDown} label="PDF" onClick={exportPdf} variant="primary" />
-          <Button className="action-button" icon={ImageDown} label="PNG" onClick={exportPng} />
-          <Button className="action-button" icon={Printer} label="Print" onClick={() => window.print()} />
+          <Button className="action-button" icon={Printer} label="Print" onClick={() => window.print()} variant="primary" />
+          <Button className="action-button" icon={FileDown} label="Save PDF" onClick={exportPdf} />
         </>
       }
       installAvailable={Boolean(installPrompt)}

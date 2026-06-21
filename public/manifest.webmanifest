@@ -1,7 +1,7 @@
 {
   "name": "Receipt Studio",
   "short_name": "Receipts",
-  "description": "Create printable receipts on a phone and export them as PDF or PNG.",
+  "description": "Create print-ready receipt sheets on a phone or tablet.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f7f4ef",
