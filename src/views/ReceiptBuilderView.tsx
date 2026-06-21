@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { Eye, Plus, X } from "lucide-preact";
+import { Eye, Plus } from "lucide-preact";
 import { useLocation } from "preact-iso";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, sortReceiptBlocks } from "../domain/blocks";
@@ -102,10 +102,11 @@ export function ReceiptBuilderView() {
       actions={
         <>
           <Button
-            className="action-button"
-            icon={paletteOpen ? X : Plus}
+            className={`action-button fields-action ${paletteOpen ? "is-open" : ""}`}
+            icon={Plus}
             label="Fields"
             onClick={() => setPaletteOpen((current) => !current)}
+            title={paletteOpen ? "Close fields" : "Open fields"}
             variant="soft"
           />
           <Button className="action-button" icon={Eye} label="Preview" onClick={openPreview} variant="primary" />

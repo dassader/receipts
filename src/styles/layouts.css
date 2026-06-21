@@ -117,6 +117,30 @@
   padding: 0 12px;
 }
 
+.fields-action {
+  transition:
+    background-color 190ms ease,
+    border-color 190ms ease,
+    color 190ms ease;
+}
+
+.fields-action svg {
+  transform-origin: center;
+  transition:
+    color 190ms ease,
+    transform 220ms ease;
+}
+
+.fields-action.is-open {
+  border-color: #ffe4e6;
+  background: #fff1f2;
+  color: var(--rose);
+}
+
+.fields-action.is-open svg {
+  transform: rotate(45deg);
+}
+
 @media (max-width: 1020px) {
   .workspace {
     grid-template-columns: 1fr;
