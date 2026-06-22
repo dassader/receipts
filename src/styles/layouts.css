@@ -58,10 +58,10 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  border: 1px solid rgba(222, 215, 204, 0.95);
+  border: 1px solid var(--floating-line);
   border-radius: var(--radius);
-  background: #ffffff;
-  box-shadow: 0 18px 50px rgba(31, 41, 55, 0.18);
+  background: var(--panel);
+  box-shadow: var(--tray-shadow);
 }
 
 .field-picker-tray.is-open {
@@ -96,7 +96,7 @@
   touch-action: pan-x pan-y;
   scrollbar-gutter: stable;
   padding: 24px;
-  background: #f3f4f6;
+  background: var(--preview-bg);
 }
 
 .preview-page-canvas {
@@ -119,10 +119,10 @@
   width: min(460px, calc(100vw - 28px));
   transform: translateX(-50%);
   padding: 10px;
-  border: 1px solid rgba(222, 215, 204, 0.95);
+  border: 1px solid var(--floating-line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 32px rgba(31, 41, 55, 0.14);
+  background: var(--floating-bg);
+  box-shadow: var(--floating-shadow);
   backdrop-filter: blur(18px);
 }
 
@@ -144,8 +144,8 @@
 }
 
 .fields-action.is-open {
-  border-color: #ffe4e6;
-  background: #fff1f2;
+  border-color: var(--danger-soft-line);
+  background: var(--danger-soft-bg);
   color: var(--rose);
   transition:
     background-color 190ms ease,
