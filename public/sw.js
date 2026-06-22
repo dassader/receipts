@@ -1,4 +1,4 @@
-const CACHE_NAME = "receipt-studio-v21";
+const CACHE_NAME = "receipt-studio-v22";
 const SCOPE = self.registration.scope;
 const ASSETS = [
   SCOPE,
@@ -32,9 +32,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
+          return cacheResponse(event, event.request, response);
         })
         .catch(() => caches.match(event.request).then((cached) => cached || caches.match(SCOPE))),
     );
@@ -49,11 +47,16 @@ self.addEventListener("fetch", (event) => {
 
       return fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => caches.match(SCOPE));
+          return cacheResponse(event, event.request, response);
+        });
     }),
   );
 });
+
+function cacheResponse(event, request, response) {
+  const copy = response.clone();
+  if (response.status === 200) {
+    event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)));
+  }
+  return response;
+}

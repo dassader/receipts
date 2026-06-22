@@ -1,52 +1,13 @@
-import {
-  BadgeDollarSign,
-  Building2,
-  CalendarDays,
-  Calculator,
-  CreditCard,
-  Globe2,
-  Hash,
-  Mail,
-  MapPin,
-  MessageSquareText,
-  Phone,
-  Percent,
-  ShoppingCart,
-  StickyNote,
-  Trash2,
-  User,
-} from "lucide-preact";
-import type { LucideIcon } from "lucide-preact";
+import { Trash2 } from "lucide-preact";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState, Totals } from "../../types";
 import { getReceiptBlockDefinition, hasReceiptBlock } from "../../domain/blocks";
 import { formatMoney, formatNumberInput, toNumber } from "../../domain/format";
 import { IconButton } from "../ui/Button";
 import { NumberField, SelectField, TextAreaField, TextField } from "../ui/Field";
 import { Section } from "../ui/Section";
+import { blockIcons } from "./blockIcons";
 
 const paymentMethods = ["Cash", "Credit card", "Debit card", "ACH", "Check", "Zelle", "Venmo", "PayPal", "Other"];
-
-const blockIcons: Record<ReceiptBlockType, LucideIcon> = {
-  businessName: Building2,
-  businessAddress: MapPin,
-  businessPhone: Phone,
-  businessEmail: Mail,
-  businessWebsite: Globe2,
-  businessId: Hash,
-  receiptNumber: Hash,
-  receiptDate: CalendarDays,
-  customerName: User,
-  customerEmail: Mail,
-  item: ShoppingCart,
-  taxRate: Percent,
-  discount: BadgeDollarSign,
-  amountPaid: CreditCard,
-  totalSummary: Calculator,
-  paymentMethod: CreditCard,
-  cashier: User,
-  note: StickyNote,
-  footer: MessageSquareText,
-};
 
 type ReceiptBlockEditorProps = {
   block: ReceiptBlock;

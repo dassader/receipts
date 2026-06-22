@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "preact/hooks";
+import type { JSX } from "preact";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { Eye, Plus } from "lucide-preact";
 import { useLocation } from "preact-iso";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
@@ -21,6 +22,7 @@ export function ReceiptBuilderView() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
+  const fieldsButtonRef = useRef<HTMLButtonElement>(null);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
 
@@ -106,9 +108,14 @@ export function ReceiptBuilderView() {
     openPalette();
   };
 
-  const finishPaletteClose = (animationName: string) => {
-    if (!paletteOpen && animationName === "tray-exit") {
+  const finishPaletteClose = (event: JSX.TargetedAnimationEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (!paletteOpen && event.animationName === "tray-exit") {
       setPaletteVisible(false);
+      fieldsButtonRef.current?.focus();
     }
   };
 
@@ -128,6 +135,9 @@ export function ReceiptBuilderView() {
       actions={
         <>
           <Button
+            aria-controls="field-picker-tray"
+            aria-expanded={paletteOpen}
+            buttonRef={fieldsButtonRef}
             className={`action-button fields-action ${paletteOpen ? "is-open" : ""}`}
             icon={Plus}
             label="Fields"
@@ -163,7 +173,8 @@ export function ReceiptBuilderView() {
         <aside
           aria-label="Field choices"
           className={`field-picker-tray ${paletteOpen ? "is-open" : "is-closing"}`}
-          onAnimationEnd={(event) => finishPaletteClose(event.animationName)}
+          id="field-picker-tray"
+          onAnimationEnd={finishPaletteClose}
         >
           <FieldPalette activeTypes={activeBlockTypes} onAddBlock={addBlock} />
         </aside>

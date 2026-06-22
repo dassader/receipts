@@ -1,45 +1,6 @@
-import {
-  BadgeDollarSign,
-  Building2,
-  CalendarDays,
-  Calculator,
-  CreditCard,
-  Globe2,
-  Hash,
-  Mail,
-  MapPin,
-  MessageSquareText,
-  Phone,
-  Percent,
-  ShoppingCart,
-  StickyNote,
-  User,
-} from "lucide-preact";
-import type { LucideIcon } from "lucide-preact";
 import type { ReceiptBlockType } from "../../types";
 import { receiptBlockDefinitions } from "../../domain/blocks";
-
-const blockIcons: Record<ReceiptBlockType, LucideIcon> = {
-  businessName: Building2,
-  businessAddress: MapPin,
-  businessPhone: Phone,
-  businessEmail: Mail,
-  businessWebsite: Globe2,
-  businessId: Hash,
-  receiptNumber: Hash,
-  receiptDate: CalendarDays,
-  customerName: User,
-  customerEmail: Mail,
-  item: ShoppingCart,
-  taxRate: Percent,
-  discount: BadgeDollarSign,
-  amountPaid: CreditCard,
-  totalSummary: Calculator,
-  paymentMethod: CreditCard,
-  cashier: User,
-  note: StickyNote,
-  footer: MessageSquareText,
-};
+import { blockIcons } from "./blockIcons";
 
 type FieldPaletteProps = {
   activeTypes: Set<ReceiptBlockType>;
