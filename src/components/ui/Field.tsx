@@ -6,6 +6,7 @@ type TextFieldProps = {
   inputMode?: JSX.HTMLAttributes<HTMLInputElement>["inputMode"];
   label: string;
   onChange: (value: string) => void;
+  placeholder?: string;
   type?: string;
   value: string;
 };
@@ -15,6 +16,7 @@ type NumberFieldProps = {
   disabled?: boolean;
   label: string;
   onChange: (value: number) => void;
+  placeholder?: string;
   step?: string;
   value: number;
 };
@@ -38,17 +40,21 @@ type TextAreaFieldProps = {
   className?: string;
   label: string;
   onChange: (value: string) => void;
+  placeholder?: string;
   rows?: number;
   value: string;
 };
 
-export function TextField({ className = "", inputMode, label, onChange, type = "text", value }: TextFieldProps) {
+export function TextField({ className = "", inputMode, label, onChange, placeholder = "", type = "text", value }: TextFieldProps) {
   return (
     <label className={`field ${className}`}>
-      <span>{label}</span>
+      <span className="sr-only">{label}</span>
       <input
+        aria-label={label}
         inputMode={inputMode}
         onInput={(event) => onChange(event.currentTarget.value)}
+        placeholder={placeholder}
+        title={label}
         type={type}
         value={value}
       />
@@ -56,16 +62,27 @@ export function TextField({ className = "", inputMode, label, onChange, type = "
   );
 }
 
-export function NumberField({ className = "", disabled = false, label, onChange, step = "0.01", value }: NumberFieldProps) {
+export function NumberField({
+  className = "",
+  disabled = false,
+  label,
+  onChange,
+  placeholder = "",
+  step = "0.01",
+  value,
+}: NumberFieldProps) {
   return (
     <label className={`field ${className}`}>
-      <span>{label}</span>
+      <span className="sr-only">{label}</span>
       <input
+        aria-label={label}
         disabled={disabled}
         inputMode="decimal"
         min="0"
         onInput={(event) => onChange(toNumber(event.currentTarget.value))}
+        placeholder={placeholder}
         step={step}
+        title={label}
         type="number"
         value={formatNumberInput(value)}
       />
@@ -75,10 +92,10 @@ export function NumberField({ className = "", disabled = false, label, onChange,
 
 export function SelectField({ className = "", label, onChange, options, placeholder, value }: SelectFieldProps) {
   return (
-    <label className={`field ${className}`}>
-      <span>{label}</span>
-      <select onChange={(event) => onChange(event.currentTarget.value)} value={value}>
-        {placeholder ? <option value="">{placeholder}</option> : null}
+    <label className={`field select-field ${className}`}>
+      <span className="sr-only">{label}</span>
+      <select aria-label={label} onChange={(event) => onChange(event.currentTarget.value)} title={label} value={value}>
+        {placeholder === undefined ? null : <option value="">{placeholder}</option>}
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -98,11 +115,18 @@ export function ToggleField({ checked, label, onChange }: ToggleFieldProps) {
   );
 }
 
-export function TextAreaField({ className = "", label, onChange, rows = 3, value }: TextAreaFieldProps) {
+export function TextAreaField({ className = "", label, onChange, placeholder = "", rows = 3, value }: TextAreaFieldProps) {
   return (
     <label className={`field ${className}`}>
-      <span>{label}</span>
-      <textarea onInput={(event) => onChange(event.currentTarget.value)} rows={rows} value={value} />
+      <span className="sr-only">{label}</span>
+      <textarea
+        aria-label={label}
+        onInput={(event) => onChange(event.currentTarget.value)}
+        placeholder={placeholder}
+        rows={rows}
+        title={label}
+        value={value}
+      />
     </label>
   );
 }

@@ -1,5 +1,8 @@
 export function toNumber(value: string) {
-  const parsed = Number.parseFloat(value);
+  const normalizedValue = value.trim().replace(/\s+/g, "");
+  const decimalCommaValue =
+    normalizedValue.includes(",") && !normalizedValue.includes(".") ? normalizedValue.replace(",", ".") : normalizedValue;
+  const parsed = Number.parseFloat(decimalCommaValue);
   return Number.isFinite(parsed) ? parsed : 0;
 }
 

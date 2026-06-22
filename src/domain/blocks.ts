@@ -2,7 +2,6 @@ import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../
 import { createId } from "./ids";
 
 export type ReceiptBlockDefinition = {
-  description: string;
   label: string;
   order: number;
   repeatable: boolean;
@@ -13,133 +12,114 @@ export const receiptBlockDefinitions: ReceiptBlockDefinition[] = [
   {
     type: "businessName",
     label: "Business name",
-    description: "Legal name or DBA",
     order: 10,
     repeatable: false,
   },
   {
     type: "businessAddress",
     label: "Business address",
-    description: "Street, city, state, ZIP",
     order: 20,
     repeatable: false,
   },
   {
     type: "businessPhone",
     label: "Phone",
-    description: "Business phone",
     order: 30,
     repeatable: false,
   },
   {
     type: "businessEmail",
     label: "Email",
-    description: "Business email",
     order: 40,
     repeatable: false,
   },
   {
     type: "businessWebsite",
     label: "Website",
-    description: "Business website",
     order: 50,
     repeatable: false,
   },
   {
     type: "businessId",
     label: "Business ID",
-    description: "Optional tax or license ID",
     order: 60,
     repeatable: false,
   },
   {
     type: "receiptNumber",
     label: "Receipt no.",
-    description: "Receipt identifier",
     order: 70,
     repeatable: false,
   },
   {
     type: "receiptDate",
     label: "Issued",
-    description: "Receipt date",
     order: 80,
     repeatable: false,
   },
   {
     type: "customerName",
     label: "Customer",
-    description: "Customer name",
     order: 90,
     repeatable: false,
   },
   {
     type: "customerEmail",
     label: "Customer email",
-    description: "Customer email",
     order: 100,
     repeatable: false,
   },
   {
     type: "item",
     label: "Item",
-    description: "Description, quantity, price",
     order: 110,
     repeatable: true,
   },
   {
     type: "taxRate",
     label: "Tax rate",
-    description: "Adds sales tax",
     order: 120,
     repeatable: false,
   },
   {
     type: "discount",
     label: "Discount",
-    description: "Discount amount",
     order: 130,
     repeatable: false,
   },
   {
     type: "amountPaid",
     label: "Amount paid",
-    description: "Paid amount",
     order: 140,
     repeatable: false,
   },
   {
     type: "totalSummary",
     label: "Total summary",
-    description: "Subtotal and total",
     order: 150,
     repeatable: false,
   },
   {
     type: "paymentMethod",
     label: "Payment",
-    description: "Payment method",
     order: 160,
     repeatable: false,
   },
   {
     type: "cashier",
     label: "Cashier",
-    description: "Staff name",
     order: 170,
     repeatable: false,
   },
   {
     type: "note",
     label: "Note",
-    description: "Policy or customer note",
     order: 180,
     repeatable: false,
   },
   {
     type: "footer",
     label: "Footer",
-    description: "Final receipt line",
     order: 190,
     repeatable: false,
   },

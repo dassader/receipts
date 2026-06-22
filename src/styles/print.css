@@ -3,13 +3,25 @@
     margin: 0;
   }
 
+  html,
   body {
+    margin: 0;
     background: #ffffff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  *,
+  *::before,
+  *::after {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .tool-panel,
   .action-bar,
   .print-setup-backdrop,
+  .demo-countdown,
   .receipt-measure {
     display: none !important;
   }
@@ -36,16 +48,20 @@
     box-sizing: border-box;
     box-shadow: none;
     margin: 0 auto;
-    width: 100%;
+    max-width: none;
+    width: var(--sheet-preview-width);
+    min-width: var(--sheet-preview-width);
+    height: var(--sheet-preview-height);
+    min-height: var(--sheet-preview-height);
     padding: var(--sheet-print-padding);
   }
 
   .receipt-page {
-    height: 100vh;
-    min-height: 100vh;
     overflow: hidden;
     break-after: page;
+    break-inside: avoid;
     page-break-after: always;
+    page-break-inside: avoid;
   }
 
   .receipt-page:last-child {

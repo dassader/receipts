@@ -1,7 +1,7 @@
 import { Trash2 } from "lucide-preact";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState, Totals } from "../../types";
 import { getReceiptBlockDefinition } from "../../domain/blocks";
-import { formatMoney, formatNumberInput, toNumber } from "../../domain/format";
+import { formatNumberInput, toNumber } from "../../domain/format";
 import { paymentMethods } from "../../domain/paymentMethods";
 import { getReceiptTotalRows } from "../../domain/totalsRows";
 import { assertNever } from "../../lib/assertNever";
@@ -40,21 +40,25 @@ export function ReceiptBlockEditor({
       <Section action={action} icon={Icon} title={definition.label}>
         <article className="item-row item-block-row">
           <label className="field item-description">
-            <span>Description</span>
+            <span>Name</span>
             <input
+              aria-label="Name"
               onInput={(event) => onUpdateItem(item.id, "description", event.currentTarget.value)}
+              title="Name"
               type="text"
               value={item.description}
             />
           </label>
 
           <label className="field compact-field">
-            <span>Qty</span>
+            <span>Amount</span>
             <input
+              aria-label="Amount"
               inputMode="decimal"
               min="0"
               onInput={(event) => onUpdateItem(item.id, "quantity", toNumber(event.currentTarget.value))}
               step="0.01"
+              title="Amount"
               type="number"
               value={formatNumberInput(item.quantity)}
             />
@@ -63,16 +67,17 @@ export function ReceiptBlockEditor({
           <label className="field compact-field">
             <span>Price</span>
             <input
+              aria-label="Price"
+              defaultValue={formatNumberInput(item.unitPrice)}
               inputMode="decimal"
-              min="0"
-              onInput={(event) => onUpdateItem(item.id, "unitPrice", toNumber(event.currentTarget.value))}
-              step="0.01"
-              type="number"
-              value={formatNumberInput(item.unitPrice)}
+              onInput={(event) => onUpdateItem(item.id, "unitPrice", Math.max(0, toNumber(event.currentTarget.value)))}
+              onBlur={(event) => {
+                event.currentTarget.value = formatNumberInput(Math.max(0, toNumber(event.currentTarget.value)));
+              }}
+              title="Price"
+              type="text"
             />
           </label>
-
-          <div className="line-total">{formatMoney(item.quantity * item.unitPrice, receipt.currency)}</div>
         </article>
       </Section>
     ) : null;
@@ -261,7 +266,7 @@ function renderBlockFields(
             label="Payment"
             onChange={(value) => updateField("paymentMethod", value)}
             options={paymentMethods}
-            placeholder="Payment method"
+            placeholder=""
             value={receipt.paymentMethod}
           />
         </div>
@@ -286,10 +291,11 @@ function renderBlockFields(
     case "footer":
       return (
         <div className="field-grid">
-          <TextField
+          <TextAreaField
             className="full"
             label="Footer line"
             onChange={(value) => updateField("footer", value)}
+            rows={2}
             value={receipt.footer}
           />
         </div>

@@ -20,11 +20,11 @@ export function FieldPalette({ activeTypes, onAddBlock }: FieldPaletteProps) {
             disabled={added}
             key={definition.type}
             onClick={() => onAddBlock(definition.type)}
+            aria-label={added ? `${definition.label} added` : `Add ${definition.label}`}
             type="button"
           >
             <Icon aria-hidden="true" />
             <span>{definition.label}</span>
-            <small>{added ? "Added" : definition.description}</small>
           </button>
         );
       })}

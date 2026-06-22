@@ -4,6 +4,7 @@ import { Eye, Plus } from "lucide-preact";
 import { useLocation } from "preact-iso";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState } from "../types";
 import { createReceiptBlock, sortReceiptBlocks } from "../domain/blocks";
+import { createDemoReceipt } from "../domain/demoReceipt";
 import { getTotals } from "../domain/totals";
 import { createId } from "../domain/ids";
 import { updatePrintPageSize } from "../domain/paper";
@@ -16,12 +17,20 @@ import { ReceiptBlockEditor } from "../components/builder/ReceiptBlockEditor";
 import { PaperPickerDialog } from "../components/print/PaperPickerDialog";
 import { Button } from "../components/ui/Button";
 
+const demoHoldDelayMs = 2000;
+const demoCountdownSeconds = 3;
+
 export function ReceiptBuilderView() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(loadReceiptState);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [previewSetupOpen, setPreviewSetupOpen] = useState(false);
+  const [demoCountdown, setDemoCountdown] = useState<number | null>(null);
+  const demoHoldTimeoutRef = useRef<number | null>(null);
+  const demoCountdownIntervalRef = useRef<number | null>(null);
+  const demoLongPressTriggeredRef = useRef(false);
+  const suppressNextFieldsClickRef = useRef(false);
   const fieldsButtonRef = useRef<HTMLButtonElement>(null);
   const totals = useMemo(() => getTotals(receipt), [receipt]);
   const activeBlockTypes = useMemo(() => new Set(receipt.blocks.map((block) => block.type)), [receipt.blocks]);
@@ -37,6 +46,14 @@ export function ReceiptBuilderView() {
     window.addEventListener("beforeprint", handleBeforePrint);
     return () => window.removeEventListener("beforeprint", handleBeforePrint);
   }, [receipt.paper]);
+
+  useEffect(
+    () => () => {
+      clearDemoHoldTimer();
+      clearDemoCountdownTimer();
+    },
+    [],
+  );
 
   const updateReceipt = (updater: (current: ReceiptState) => ReceiptState) => {
     setReceipt((current) => {
@@ -100,6 +117,10 @@ export function ReceiptBuilderView() {
   };
 
   const togglePalette = () => {
+    if (demoCountdown !== null) {
+      return;
+    }
+
     if (paletteOpen) {
       closePalette();
       return;
@@ -117,6 +138,109 @@ export function ReceiptBuilderView() {
       setPaletteVisible(false);
       fieldsButtonRef.current?.focus();
     }
+  };
+
+  const clearDemoHoldTimer = () => {
+    if (demoHoldTimeoutRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(demoHoldTimeoutRef.current);
+    demoHoldTimeoutRef.current = null;
+  };
+
+  const clearDemoCountdownTimer = () => {
+    if (demoCountdownIntervalRef.current === null) {
+      return;
+    }
+
+    window.clearInterval(demoCountdownIntervalRef.current);
+    demoCountdownIntervalRef.current = null;
+  };
+
+  const applyDemoReceipt = () => {
+    const nextReceipt = createDemoReceipt();
+
+    clearDemoCountdownTimer();
+    setReceipt(nextReceipt);
+    saveReceiptState(nextReceipt);
+    document.body.dataset.paper = nextReceipt.paper;
+    updatePrintPageSize(nextReceipt.paper);
+    setPaletteOpen(false);
+    setPaletteVisible(false);
+    setPreviewSetupOpen(false);
+    setDemoCountdown(null);
+  };
+
+  const startDemoCountdown = () => {
+    clearDemoHoldTimer();
+    clearDemoCountdownTimer();
+    demoLongPressTriggeredRef.current = true;
+    setPaletteOpen(false);
+    setPreviewSetupOpen(false);
+    setDemoCountdown(demoCountdownSeconds);
+
+    let nextCountdown = demoCountdownSeconds;
+    demoCountdownIntervalRef.current = window.setInterval(() => {
+      nextCountdown -= 1;
+
+      if (nextCountdown <= 0) {
+        applyDemoReceipt();
+        return;
+      }
+
+      setDemoCountdown(nextCountdown);
+    }, 1000);
+  };
+
+  const startFieldsHold = (event: JSX.TargetedPointerEvent<HTMLButtonElement>) => {
+    if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0) || demoCountdown !== null) {
+      return;
+    }
+
+    clearDemoHoldTimer();
+    demoLongPressTriggeredRef.current = false;
+    demoHoldTimeoutRef.current = window.setTimeout(startDemoCountdown, demoHoldDelayMs);
+  };
+
+  const startFieldsMouseHold = (event: JSX.TargetedMouseEvent<HTMLButtonElement>) => {
+    if (event.button !== 0 || demoCountdown !== null) {
+      return;
+    }
+
+    clearDemoHoldTimer();
+    demoLongPressTriggeredRef.current = false;
+    demoHoldTimeoutRef.current = window.setTimeout(startDemoCountdown, demoHoldDelayMs);
+  };
+
+  const startFieldsTouchHold = () => {
+    if (demoCountdown !== null) {
+      return;
+    }
+
+    clearDemoHoldTimer();
+    demoLongPressTriggeredRef.current = false;
+    demoHoldTimeoutRef.current = window.setTimeout(startDemoCountdown, demoHoldDelayMs);
+  };
+
+  const stopFieldsHold = () => {
+    clearDemoHoldTimer();
+
+    if (!demoLongPressTriggeredRef.current) {
+      return;
+    }
+
+    suppressNextFieldsClickRef.current = true;
+    demoLongPressTriggeredRef.current = false;
+  };
+
+  const handleFieldsClick = () => {
+    if (suppressNextFieldsClickRef.current || demoCountdown !== null) {
+      suppressNextFieldsClickRef.current = false;
+      return;
+    }
+
+    togglePalette();
   };
 
   const openPreviewWithPaper = (paper: ReceiptState["paper"]) => {
@@ -141,7 +265,17 @@ export function ReceiptBuilderView() {
             className={`action-button fields-action ${paletteOpen ? "is-open" : ""}`}
             icon={Plus}
             label="Fields"
-            onClick={togglePalette}
+            onClick={handleFieldsClick}
+            onMouseDown={startFieldsMouseHold}
+            onMouseLeave={stopFieldsHold}
+            onMouseUp={stopFieldsHold}
+            onPointerCancel={stopFieldsHold}
+            onPointerDown={startFieldsHold}
+            onPointerLeave={stopFieldsHold}
+            onPointerUp={stopFieldsHold}
+            onTouchCancel={stopFieldsHold}
+            onTouchEnd={stopFieldsHold}
+            onTouchStart={startFieldsTouchHold}
             title={paletteOpen ? "Close fields" : "Open fields"}
             variant="soft"
           />
@@ -185,6 +319,12 @@ export function ReceiptBuilderView() {
           onCancel={() => setPreviewSetupOpen(false)}
           onSelect={openPreviewWithPaper}
         />
+      ) : null}
+
+      {demoCountdown !== null ? (
+        <div aria-live="assertive" className="demo-countdown" role="status">
+          Demo in {demoCountdown}
+        </div>
       ) : null}
     </AppShell>
   );
