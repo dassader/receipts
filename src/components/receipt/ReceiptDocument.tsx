@@ -1,7 +1,9 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { LineItem, ReceiptBlock, ReceiptState, Totals } from "../../types";
-import { getOrderedReceiptItems, hasReceiptBlock } from "../../domain/blocks";
-import { formatDate, formatMoney, formatNumberInput, formatQuantity } from "../../domain/format";
+import { getOrderedReceiptItems } from "../../domain/blocks";
+import { formatDate, formatMoney, formatQuantity } from "../../domain/format";
+import { getReceiptTotalRows } from "../../domain/totalsRows";
+import { assertNever } from "../../lib/assertNever";
 
 type ReceiptDocumentProps = {
   receipt: ReceiptState;
@@ -170,27 +172,21 @@ function ReceiptBlockView({
     case "taxRate":
     case "discount":
     case "amountPaid":
+    case "item":
       return null;
     case "totalSummary":
       return (
         <section className="receipt-block receipt-totals" data-measure-part={measureId}>
-          <ReceiptTotal label="Subtotal" value={formatMoney(totals.subtotal, receipt.currency)} />
-          {hasReceiptBlock(receipt, "taxRate") && receipt.taxRate > 0 ? (
-            <ReceiptTotal label={`Tax ${formatNumberInput(receipt.taxRate)}%`} value={formatMoney(totals.tax, receipt.currency)} />
-          ) : null}
-          {hasReceiptBlock(receipt, "discount") && totals.discount > 0 ? (
-            <ReceiptTotal label="Discount" value={formatMoney(-totals.discount, receipt.currency)} />
-          ) : null}
-          <div className="grand-total">
-            <span>Total</span>
-            <strong>{formatMoney(totals.total, receipt.currency)}</strong>
-          </div>
-          {hasReceiptBlock(receipt, "amountPaid") ? (
-            <ReceiptTotal label="Paid" value={formatMoney(totals.paid, receipt.currency)} />
-          ) : null}
-          {hasReceiptBlock(receipt, "amountPaid") && totals.balance > 0 ? (
-            <ReceiptTotal label="Balance due" value={formatMoney(totals.balance, receipt.currency)} />
-          ) : null}
+          {getReceiptTotalRows(receipt, totals).map((row) =>
+            row.emphasized ? (
+              <div className="grand-total" key={row.key}>
+                <span>{row.label}</span>
+                <strong>{row.value}</strong>
+              </div>
+            ) : (
+              <ReceiptTotal key={row.key} label={row.label} value={row.value} />
+            ),
+          )}
         </section>
       );
     case "paymentMethod":
@@ -210,6 +206,8 @@ function ReceiptBlockView({
         </footer>
       );
   }
+
+  return assertNever(block.type);
 }
 
 function ReceiptItemsGroup({ currency, items, measureId }: { currency: string; items: LineItem[]; measureId?: string }) {

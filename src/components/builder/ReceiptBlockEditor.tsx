@@ -1,13 +1,16 @@
 import { Trash2 } from "lucide-preact";
 import type { LineItem, ReceiptBlock, ReceiptBlockType, ReceiptState, Totals } from "../../types";
-import { getReceiptBlockDefinition, hasReceiptBlock } from "../../domain/blocks";
+import { getReceiptBlockDefinition } from "../../domain/blocks";
 import { formatMoney, formatNumberInput, toNumber } from "../../domain/format";
+import { paymentMethods } from "../../domain/paymentMethods";
+import { getReceiptTotalRows } from "../../domain/totalsRows";
+import { assertNever } from "../../lib/assertNever";
 import { IconButton } from "../ui/Button";
 import { NumberField, SelectField, TextAreaField, TextField } from "../ui/Field";
 import { Section } from "../ui/Section";
 import { blockIcons } from "./blockIcons";
 
-const paymentMethods = ["Cash", "Credit card", "Debit card", "ACH", "Check", "Zelle", "Venmo", "PayPal", "Other"];
+type EditableBlockType = Exclude<ReceiptBlockType, "item">;
 
 type ReceiptBlockEditorProps = {
   block: ReceiptBlock;
@@ -83,7 +86,7 @@ export function ReceiptBlockEditor({
 }
 
 function renderBlockFields(
-  type: ReceiptBlockType,
+  type: EditableBlockType,
   receipt: ReceiptState,
   totals: Totals,
   updateField: <K extends keyof ReceiptState>(field: K, value: ReceiptState[K]) => void,
@@ -242,38 +245,12 @@ function renderBlockFields(
     case "totalSummary":
       return (
         <dl className="totals-strip builder-summary-strip">
-          <div>
-            <dt>Subtotal</dt>
-            <dd>{formatMoney(totals.subtotal, receipt.currency)}</dd>
-          </div>
-          {hasReceiptBlock(receipt, "taxRate") && receipt.taxRate > 0 ? (
-            <div>
-              <dt>Tax</dt>
-              <dd>{formatMoney(totals.tax, receipt.currency)}</dd>
+          {getReceiptTotalRows(receipt, totals).map((row) => (
+            <div key={row.key}>
+              <dt>{row.label}</dt>
+              <dd>{row.value}</dd>
             </div>
-          ) : null}
-          {hasReceiptBlock(receipt, "discount") && totals.discount > 0 ? (
-            <div>
-              <dt>Discount</dt>
-              <dd>{formatMoney(-totals.discount, receipt.currency)}</dd>
-            </div>
-          ) : null}
-          <div>
-            <dt>Total</dt>
-            <dd>{formatMoney(totals.total, receipt.currency)}</dd>
-          </div>
-          {hasReceiptBlock(receipt, "amountPaid") ? (
-            <div>
-              <dt>Paid</dt>
-              <dd>{formatMoney(totals.paid, receipt.currency)}</dd>
-            </div>
-          ) : null}
-          {hasReceiptBlock(receipt, "amountPaid") && totals.balance > 0 ? (
-            <div>
-              <dt>Balance</dt>
-              <dd>{formatMoney(totals.balance, receipt.currency)}</dd>
-            </div>
-          ) : null}
+          ))}
         </dl>
       );
     case "paymentMethod":
@@ -318,4 +295,6 @@ function renderBlockFields(
         </div>
       );
   }
+
+  return assertNever(type);
 }
