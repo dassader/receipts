@@ -144,11 +144,20 @@
   border-color: #dbeafe;
 }
 
-.button-danger,
-.icon-button.button-danger {
+.button-danger {
   background: #fff1f2;
   color: var(--rose);
   border-color: #ffe4e6;
+}
+
+.icon-button.button-danger {
+  background: var(--rose);
+  color: var(--ink);
+  border-color: var(--rose);
+}
+
+.icon-button.button-danger svg {
+  color: var(--ink);
 }
 
 .icon-button {
